@@ -20,8 +20,17 @@ builder.Services.AddTransient<IMedicoRepository, MedicoRepository>();
 builder.Services.AddTransient<IMedicoService, MedicoService>();
 builder.Services.AddTransient<IConsultaRepository, ConsultaRepository>();
 builder.Services.AddTransient<IConsultaService, ConsultaService>();
+builder.Services.AddTransient<IPacienteRepository, PacienteRepository>();
+builder.Services.AddTransient<IPacienteService, PacienteService>();
 
 var app = builder.Build();
+
+// Seed the database with initial data
+using (var scope = app.Services.CreateScope())
+{
+    var context = scope.ServiceProvider.GetRequiredService<MedicosDbContext>();
+    DbSeeder.Seed(context);
+}
 
 // Configure the HTTP request pipeline.
 if(app.Environment.IsDevelopment())

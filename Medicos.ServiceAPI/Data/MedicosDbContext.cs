@@ -28,6 +28,15 @@ namespace Medicos.ServiceAPI.Data
             modelBuilder.Entity<Medico>()
                 .HasIndex(m => m.Crm)
                 .IsUnique();
+
+            // Configurar índices únicos para Paciente
+            modelBuilder.Entity<Paciente>()
+                .HasIndex(p => p.Email)
+                .IsUnique();
+
+            modelBuilder.Entity<Paciente>()
+                .HasIndex(p => p.Cpf)
+                .IsUnique();
         }
     }
 }
