@@ -482,3 +482,5 @@ $RECYCLE.BIN/
 
 # Vim temporary swap files
 *.swp
+/Medicos.ServiceAPI/vollmed.db-shm
+/Medicos.ServiceAPI/vollmed.db-wal
