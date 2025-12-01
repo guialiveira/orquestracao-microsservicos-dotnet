@@ -3,6 +3,7 @@ using Medicos.ServiceAPI.Dto;
 using Medicos.ServiceAPI.Exceptions;
 using Medicos.ServiceAPI.Interfaces;
 using System.Diagnostics;
+using System.Transactions;
 
 namespace Medicos.ServiceAPI.Services
 {
@@ -70,33 +71,40 @@ namespace Medicos.ServiceAPI.Services
             int batchSize = 50;
             int totalBatches = quantidade / batchSize;
 
-            Console.WriteLine($"\n=== Iniciando importação de {quantidade} pacientes ===");
-
-            for (int batch = 0; batch < totalBatches; batch++)
+            // TransactionScope mantém o lock ativo durante toda a operação
+            using (var scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
             {
-                for (int i = 0; i < batchSize; i++)
-                {
-                    int numero = (batch * batchSize) + i + 1;
-                    var pacienteDto = new PacienteDto
-                    {
-                        Nome = $"Paciente Teste {numero}",
-                        Cpf = $"{10000000000L + numero}",
-                        Email = $"paciente{numero}@teste.com",
-                        Telefone = $"(11) 9{numero:D8}"
-                    };
+                Console.WriteLine($"\n=== Iniciando importação de {quantidade} pacientes ===");
 
-                    var paciente = new Paciente(pacienteDto);
-                    await _repository.InsertAsync(paciente);
+                for (int batch = 0; batch < totalBatches; batch++)
+                {
+                    for (int i = 0; i < batchSize; i++)
+                    {
+                        int numero = (batch * batchSize) + i + 1;
+                        var pacienteDto = new PacienteDto
+                        {
+                            Nome = $"Paciente Teste {numero}",
+                            Cpf = $"{10000000000L + numero}",
+                            Email = $"paciente{numero}@teste.com",
+                            Telefone = $"(11) 9{numero:D8}"
+                        };
+
+                        var paciente = new Paciente(pacienteDto);
+                        await _repository.InsertAsync(paciente);
+                    }
+
+                    Console.WriteLine($"[{DateTime.Now:HH:mm:ss}] Importando lote {batch + 1}/{totalBatches}... ({(batch + 1) * batchSize} pacientes inseridos)");
+
+                    // Lock MANTIDO aqui porque TransactionScope ainda está aberto
+                    Thread.Sleep(1000);
                 }
 
-                Console.WriteLine($"[{DateTime.Now:HH:mm:ss}] Importando lote {batch + 1}/{totalBatches}... ({(batch + 1) * batchSize} pacientes inseridos)");
+                // Comitar transação - lock liberado só aqui
+                scope.Complete();
 
-                // Simula processamento lento para manter o lock no banco por mais tempo
-                Thread.Sleep(1000);
+                sw.Stop();
+                Console.WriteLine($"=== Importação concluída em {sw.Elapsed.TotalSeconds:F2}s ===\n");
             }
-
-            sw.Stop();
-            Console.WriteLine($"=== Importação concluída em {sw.Elapsed.TotalSeconds:F2}s ===\n");
 
             return new
             {
