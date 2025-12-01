@@ -10,13 +10,10 @@ namespace VollMed.Web.Interfaces
     {
         IVollMedApiService WithContext(HttpContext context);
 
-        //Task<PaginatedList<ConsultaDto>> ListarConsultas(int? page);
-        //Task<FormularioConsultaDto> ObterFormularioConsulta(long? consultaId);
-
-        //Task<ReceitaResultadoOperacaoDto> GerarReceita(ReceitaDto input);
-
-        //Task ExcluirConsulta(long consultaId);
-        //Task<ConsultaDto> SalvarConsulta(ConsultaDto input);
+        Task<PaginatedList<ConsultaDto>> ListarConsultas(int? page);
+        Task<ConsultaDto> ObterFormularioConsulta(long? consultaId);
+        Task ExcluirConsulta(long consultaId);
+        Task<ConsultaDto> SalvarConsulta(ConsultaDto input);
 
         Task<PaginatedList<MedicoDto>> ListarMedicos(int? page);
         Task<MedicoDto> ObterFormularioMedico(long? medicoId);

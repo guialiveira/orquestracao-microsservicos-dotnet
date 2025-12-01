@@ -47,9 +47,12 @@ namespace VollMed.Web.Controllers
         {
             if (dados._method == "delete")
             {
-                await _vollMedApiService
-                    .WithContext(HttpContext)
-                    .ExcluirMedico(dados.Id);
+                if (dados.Id.HasValue)
+                {
+                    await _vollMedApiService
+                        .WithContext(HttpContext)
+                        .ExcluirMedico(dados.Id.Value);
+                }
                 return Redirect("/medicos");
             }
 

@@ -27,104 +27,47 @@ namespace VollMed.Web.Services
         }
 
         #region Consulta
-        //public async Task<PaginatedList<ConsultaDto>> ListarConsultas(int? page)
-        //{
-        //    var url = $"{_baseUri}/consulta/listar?page={page ?? 1}";
-        //    return await _httpClient.GetFromJsonAsync<PaginatedList<ConsultaDto>>(url)
-        //           ?? new PaginatedList<ConsultaDto>(new List<ConsultaDto>(), 0, page ?? 1, 10);
-        //}
 
-        //public async Task<FormularioConsultaDto> ObterFormularioConsulta(long? consultaId)
-        //{
-        //    var url = $"{_baseUri}/consulta/formulario/{consultaId}";
-        //    return await _httpClient.GetFromJsonAsync<FormularioConsultaDto>(url) ?? new FormularioConsultaDto();
-        //}
+        public async Task<PaginatedList<ConsultaDto>> ListarConsultas(int? page)
+        {
+            var url = $"{_baseUri}/consulta/listar?page={page ?? 1}";
+            return await _httpClient.GetFromJsonAsync<PaginatedList<ConsultaDto>>(url)
+                   ?? new PaginatedList<ConsultaDto>(new List<ConsultaDto>(), 0, page ?? 1, 10);
+        }
 
-        //public async Task<ConsultaDto> SalvarConsulta(ConsultaDto input)
-        //{
-        //    if (string.IsNullOrEmpty(input.PacienteCpf))
-        //        throw new Exception("CPF do paciente é obrigatório!");
+        public async Task<ConsultaDto> ObterFormularioConsulta(long? consultaId)
+        {
+            var url = $"{_baseUri}/consulta/formulario/{consultaId}";
+            return await _httpClient.GetFromJsonAsync<ConsultaDto>(url) ?? new ConsultaDto();
+        }
 
-        //    // Aqui fazemos a implementação da chamada no microsserviço Paciente, para obter seus dados
-        //    // Aguarda corretamente o retorno do paciente
-        //    var paciente = await ObterPacientePorCpf(input.PacienteCpf);
+        public async Task<ConsultaDto> SalvarConsulta(ConsultaDto input)
+        {
+            var url = $"{_baseUri}/consulta/salvar";
+            var response = await _httpClient.PostAsJsonAsync(url, input);
 
-        //    if (paciente == null)
-        //        throw new Exception("Paciente não encontrado na base.");
+            if (!response.IsSuccessStatusCode)
+            {
+                var erro = await response.Content.ReadAsStringAsync();
+                throw new Exception($"Erro ao salvar consulta: {erro}");
+            }
 
-        //    // Preenche campos redundantes, se necessário
-        //    input.PacienteId = paciente.Id;
-        //    input.PacienteNome = paciente.Nome;
+            return await response.Content.ReadFromJsonAsync<ConsultaDto>();
+        }
 
-        //    var url = $"{_baseUri}/consulta/salvar";
-        //    var response = await _httpClient.PostAsJsonAsync(url, input);
-
-        //    if (!response.IsSuccessStatusCode)
-        //    {
-        //        var erro = await response.Content.ReadAsStringAsync();
-        //        throw new Exception($"Erro ao salvar consulta: {erro}");
-        //    }
-
-        //    return await response.Content.ReadFromJsonAsync<ConsultaDto>();
-        //}
-
-
-        //public async Task<ConsultaDto> SalvarConsulta_orquestrado(ConsultaDto input)
-        //{
-        //    if (string.IsNullOrEmpty(input.PacienteCpf))
-        //        throw new Exception("CPF do paciente é obrigatório!");
-
-        //    if (input.MedicoId <= 0)
-        //        throw new Exception("Médico inválido.");
-
-        //    // Agora a chamada vai direto para o endpoint orquestrado do Gateway
-        //    var url = $"{_baseUri}/consulta/agendar-orquestrado";
-        //    var response = await _httpClient.PostAsJsonAsync(url, input);
-
-        //    if (!response.IsSuccessStatusCode)
-        //    {
-        //        var erro = await response.Content.ReadAsStringAsync();
-        //        throw new Exception($"Erro ao salvar consulta (via Gateway): {erro}");
-        //    }
-
-        //    return await response.Content.ReadFromJsonAsync<ConsultaDto>();
-        //}
-
-
-        //public async Task ExcluirConsulta(long consultaId)
-        //{
-        //    try
-        //    {
-
-        //        var url = $"{_baseUri}/consulta/excluir";
-        //        var response = await _httpClient.DeleteAsync($"{url}/{consultaId}");
-        //        response.EnsureSuccessStatusCode();
-        //    }
-        //    catch (Exception ex) {
-        //        throw new Exception(ex.Message);
-        //    }
-        //}
-
-        //public async Task<ReceitaResultadoOperacaoDto> GerarReceita(ReceitaDto input)
-        //{
-        //    var url = $"{_baseUri}/consulta/gerarreceita";
-
-        //    var response = await _httpClient.PostAsJsonAsync(url, input);
-
-        //    if (!response.IsSuccessStatusCode)
-        //    {
-        //        var erro = await response.Content.ReadAsStringAsync();
-        //        throw new Exception($"Erro ao salvar e gerar receita: {erro}");
-        //    }
-
-        //    var resultado = await response.Content.ReadFromJsonAsync<ReceitaResultadoOperacaoDto>();
-
-        //    return resultado ?? new ReceitaResultadoOperacaoDto
-        //    {
-        //        Sucesso = false,
-        //        Mensagem = "Não foi possível interpretar o retorno da API."
-        //    };
-        //}
+        public async Task ExcluirConsulta(long consultaId)
+        {
+            try
+            {
+                var url = $"{_baseUri}/consulta/excluir";
+                var response = await _httpClient.DeleteAsync($"{url}/{consultaId}");
+                response.EnsureSuccessStatusCode();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
 
         #endregion
 

@@ -20,7 +20,7 @@ namespace VollMed.Web.Dtos
             Especialidade = (Especialidade)medico.Especialidade;
         }
 
-        public long Id { get; set; }
+        public long? Id { get; set; }
         public string _method { get; set; }
         [Required(ErrorMessage = "Campo obrigatório"), MinLength(1)]
         public string Nome { get; set; }

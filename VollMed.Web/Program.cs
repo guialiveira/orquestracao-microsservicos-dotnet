@@ -15,22 +15,10 @@ builder.Services.AddControllersWithViews(options =>
     options.Filters.Add<ExceptionHandlerFilter>();
 });
 
-var connectionString = builder.Configuration.GetConnectionString("SqliteConnection");
-builder.Services.AddDbContext<ApplicationDbContext>(x => x.UseSqlite(connectionString));
-
-var uri = new Uri(builder.Configuration["Medicos.ServiceAPI.Url"]!);
-HttpClient httpClient = new HttpClient()
-{
-    BaseAddress = uri
-};
-
-
+// Configuração do HttpClient para comunicação com a API
 builder.Services.AddHttpClient<IVollMedApiService, VollMedApiService>();
 
-//builder.Services.AddTransient<IMedicoRepository, MedicoRepository>();
-//builder.Services.AddTransient<IMedicoService, MedicoService>();
-
-builder.Services.AddTransient<IConsultaRepository, ConsultaRepository>();
+// Serviços da aplicação (agora todos usam a API)
 builder.Services.AddTransient<IConsultaService, ConsultaService>();
 
 var app = builder.Build();

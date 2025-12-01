@@ -18,6 +18,8 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddTransient<IMedicoRepository, MedicoRepository>();
 builder.Services.AddTransient<IMedicoService, MedicoService>();
+builder.Services.AddTransient<IConsultaRepository, ConsultaRepository>();
+builder.Services.AddTransient<IConsultaService, ConsultaService>();
 
 var app = builder.Build();
 

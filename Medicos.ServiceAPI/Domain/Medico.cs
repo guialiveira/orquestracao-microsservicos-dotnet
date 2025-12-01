@@ -21,6 +21,8 @@ namespace Medicos.ServiceAPI.Domain
 
         public Especialidade Especialidade { get; private set; }
 
+        public ICollection<Consulta> Consultas { get; private set; } = new List<Consulta>();
+
         public Medico() { }
         public Medico(MedicoDto dados)
         {
