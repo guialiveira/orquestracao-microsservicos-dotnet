@@ -3,7 +3,6 @@ using Medicos.ServiceAPI.Dto;
 using Medicos.ServiceAPI.Exceptions;
 using Medicos.ServiceAPI.Interfaces;
 using System.Diagnostics;
-using System.Transactions;
 
 namespace Medicos.ServiceAPI.Services
 {
@@ -68,43 +67,31 @@ namespace Medicos.ServiceAPI.Services
         public async Task<object> ImportarLoteAsync(int quantidade)
         {
             var sw = Stopwatch.StartNew();
-            int batchSize = 50;
-            int totalBatches = quantidade / batchSize;
 
-            // TransactionScope mantém o lock ativo durante toda a operação
-            using (var scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+            Console.WriteLine($"\n=== Iniciando importação de {quantidade} pacientes ===");
+
+            // Gerar todos os pacientes
+            var pacientes = new List<Paciente>();
+            for (int i = 1; i <= quantidade; i++)
             {
-                Console.WriteLine($"\n=== Iniciando importação de {quantidade} pacientes ===");
-
-                for (int batch = 0; batch < totalBatches; batch++)
+                var dto = new PacienteDto
                 {
-                    for (int i = 0; i < batchSize; i++)
-                    {
-                        int numero = (batch * batchSize) + i + 1;
-                        var pacienteDto = new PacienteDto
-                        {
-                            Nome = $"Paciente Teste {numero}",
-                            Cpf = $"{10000000000L + numero}",
-                            Email = $"paciente{numero}@teste.com",
-                            Telefone = $"(11) 9{numero:D8}"
-                        };
-
-                        var paciente = new Paciente(pacienteDto);
-                        await _repository.InsertAsync(paciente);
-                    }
-
-                    Console.WriteLine($"[{DateTime.Now:HH:mm:ss}] Importando lote {batch + 1}/{totalBatches}... ({(batch + 1) * batchSize} pacientes inseridos)");
-
-                    // Lock MANTIDO aqui porque TransactionScope ainda está aberto
-                    Thread.Sleep(1000);
-                }
-
-                // Comitar transação - lock liberado só aqui
-                scope.Complete();
-
-                sw.Stop();
-                Console.WriteLine($"=== Importação concluída em {sw.Elapsed.TotalSeconds:F2}s ===\n");
+                    Nome = $"Paciente Teste {i}",
+                    Cpf = $"{10000000000L + i}",
+                    Email = $"paciente{i}@teste.com",
+                    Telefone = $"(11) 9{i:D8}"
+                };
+                pacientes.Add(new Paciente(dto));
             }
+
+            // Inserir com transação (lock mantido durante toda operação)
+            await _repository.InsertRangeAsync(pacientes, count =>
+            {
+                Console.WriteLine($"[{DateTime.Now:HH:mm:ss}] Importados {count} pacientes...");
+            });
+
+            sw.Stop();
+            Console.WriteLine($"=== Importação concluída em {sw.Elapsed.TotalSeconds:F2}s ===\n");
 
             return new
             {

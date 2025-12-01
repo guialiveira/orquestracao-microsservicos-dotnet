@@ -26,6 +26,56 @@ namespace Medicos.ServiceAPI.Repositories
             await _context.SaveChangesAsync();
         }
 
+        public async Task InsertRangeAsync(IEnumerable<Paciente> pacientes, Action<int> onProgress)
+        {
+            // Iniciar transação explícita (funciona com SQLite)
+            using var transaction = await _context.Database.BeginTransactionAsync();
+
+            try
+            {
+                int count = 0;
+                int batchSize = 50;
+                var batch = new List<Paciente>();
+
+                foreach (var paciente in pacientes)
+                {
+                    batch.Add(paciente);
+                    count++;
+
+                    // Salvar em batches de 50
+                    if (batch.Count >= batchSize)
+                    {
+                        _context.Pacientes.AddRange(batch);
+                        await _context.SaveChangesAsync();
+
+                        onProgress(count);  // Callback para logging
+
+                        // Lock MANTIDO durante o sleep (transação ainda aberta)
+                        Thread.Sleep(1000);
+
+                        batch.Clear();
+                    }
+                }
+
+                // Salvar último batch se houver
+                if (batch.Count > 0)
+                {
+                    _context.Pacientes.AddRange(batch);
+                    await _context.SaveChangesAsync();
+                    onProgress(count);
+                }
+
+                // Comitar transação - lock liberado APENAS aqui
+                await transaction.CommitAsync();
+            }
+            catch
+            {
+                // Rollback em caso de erro
+                await transaction.RollbackAsync();
+                throw;
+            }
+        }
+
         public async Task UpdateAsync(Paciente paciente)
         {
             _context.Update(paciente);
