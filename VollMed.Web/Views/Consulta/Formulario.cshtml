@@ -7,6 +7,8 @@
     especialidades = especialidades ?? new List<Especialidade>();
     var medicos = ViewData["Medicos"] as List<MedicoDto>;
     medicos = medicos ?? new List<MedicoDto>();
+    var pacientes = ViewData["Pacientes"] as List<PacienteDto>;
+    pacientes = pacientes ?? new List<PacienteDto>();
 }
 
 <main class="container">
@@ -42,8 +44,14 @@
             </div>
 
             <div class="form-group">
-                <label for="cpf">CPF do Paciente</label>
-                <input asp-for="Paciente" type="number" class="form-control" placeholder="Digite o CPF do paciente" required />
+                <label for="Paciente">Paciente</label>
+                <select asp-for="Paciente" class="form-control" required>
+                    <option value="">[SELECIONE UM PACIENTE]</option>
+                    @foreach (var paciente in pacientes)
+                    {
+                        <option value="@paciente.Cpf">@paciente.Nome - @paciente.Cpf</option>
+                    }
+                </select>
                 <span asp-validation-for="Paciente" class="text-danger"></span>
             </div>
 

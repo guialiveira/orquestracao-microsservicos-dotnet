@@ -10,13 +10,15 @@ namespace Medicos.ServiceAPI.Services
     {
         private readonly IConsultaRepository _consultaRepository;
         private readonly IMedicoRepository _medicoRepository;
+        private readonly IPacienteRepository _pacienteRepository;
 
         private const int PageSize = 5;
 
-        public ConsultaService(IConsultaRepository consultaRepository, IMedicoRepository medicoRepository)
+        public ConsultaService(IConsultaRepository consultaRepository, IMedicoRepository medicoRepository, IPacienteRepository pacienteRepository)
         {
             _consultaRepository = consultaRepository;
             _medicoRepository = medicoRepository;
+            _pacienteRepository = pacienteRepository;
         }
 
         public async Task<PaginatedList<ConsultaDto>> ListarAsync(int? page)
@@ -29,17 +31,24 @@ namespace Medicos.ServiceAPI.Services
                 .GetAll()
                 .ToListAsync();
 
+            var pacientes = await _pacienteRepository
+                .GetAll()
+                .ToListAsync();
+
             var medicosDict = medicos.ToDictionary(m => m.Id, m => m);
+            var pacientesDict = pacientes.ToDictionary(p => p.Cpf, p => p);
 
             var dtos = consultas.Select(c =>
             {
                 medicosDict.TryGetValue(c.MedicoId, out var medico);
+                pacientesDict.TryGetValue(c.Paciente, out var paciente);
 
                 return new ConsultaDto(
                     c.Id,
                     c.MedicoId,
                     medico?.Nome ?? "Médico não encontrado",
                     c.Paciente,
+                    paciente?.Nome ?? "Paciente não encontrado",
                     c.Data,
                     medico?.Especialidade ?? 0
                 );
@@ -95,7 +104,19 @@ namespace Medicos.ServiceAPI.Services
             if (consulta == null) throw new RegraDeNegocioException("Consulta não encontrada.");
 
             var medicoConsulta = await _medicoRepository.FindByIdAsync(consulta.MedicoId);
-            return new ConsultaDto(consulta.Id, consulta.MedicoId, string.Empty, consulta.Paciente, consulta.Data, medicoConsulta!.Especialidade);
+            var pacienteConsulta = await _pacienteRepository.GetAll()
+                .Where(p => p.Cpf == consulta.Paciente)
+                .FirstOrDefaultAsync();
+
+            return new ConsultaDto(
+                consulta.Id,
+                consulta.MedicoId,
+                medicoConsulta?.Nome ?? string.Empty,
+                consulta.Paciente,
+                pacienteConsulta?.Nome,
+                consulta.Data,
+                medicoConsulta!.Especialidade
+            );
         }
 
         public async Task ExcluirAsync(long id)

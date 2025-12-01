@@ -16,6 +16,8 @@ namespace Medicos.ServiceAPI.Dto
         public string MedicoNome { get; set; }
         [Required(ErrorMessage = "Campo obrigatório"), StringLength(11, MinimumLength = 11, ErrorMessage = "CPF deve ter 11 digitos")]
         public string Paciente { get; set; }
+        [ValidateNever]
+        public string? PacienteNome { get; set; }
         [Required(ErrorMessage = "Campo obrigatório"), DataType(DataType.DateTime)]
         public DateTime Data { get; set; }
         [Required(ErrorMessage = "Campo obrigatório")]
@@ -30,7 +32,7 @@ namespace Medicos.ServiceAPI.Dto
             long MedicoId,
             string MedicoNome,
             string Paciente,
-
+            string? PacienteNome,
             DateTime Data,
             Especialidade Especialidade
         )
@@ -39,6 +41,7 @@ namespace Medicos.ServiceAPI.Dto
             this.MedicoId = MedicoId;
             this.MedicoNome = MedicoNome;
             this.Paciente = Paciente;
+            this.PacienteNome = PacienteNome;
             this.Data = Data;
             this.Especialidade = Especialidade;
         }

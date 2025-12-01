@@ -20,5 +20,10 @@ namespace VollMed.Web.Interfaces
         Task ExcluirMedico(long medicoId);
         Task<MedicoDto> SalvarMedico(MedicoDto input);
         Task<IEnumerable<MedicoDto>> ListarMedicosPorEspecialidade(Especialidade especEnum);
+
+        Task<PaginatedList<PacienteDto>> ListarPacientes(int? page);
+        Task<PacienteDto> ObterFormularioPaciente(long? pacienteId);
+        Task ExcluirPaciente(long pacienteId);
+        Task<PacienteDto> SalvarPaciente(PacienteDto input);
     }
 }

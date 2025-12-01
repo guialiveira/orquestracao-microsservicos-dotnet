@@ -1,0 +1,48 @@
+@using VollMed.Web.Dtos;
+@model VollMed.Web.Dtos.PacienteDto
+
+<main class="container">
+    <section class="card form-card">
+        <h2 class="title">Cadastro de paciente</h2>
+
+        <form method="post" asp-action="" asp-controller="Pacientes">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" name="_method" value="post">
+            <input type="hidden" asp-for="Id" />
+
+            <div class="form-group">
+                <label asp-for="Nome">Nome:</label>
+                <input asp-for="Nome" class="form-control" />
+                <span asp-validation-for="Nome" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Cpf">CPF:</label>
+                <input asp-for="Cpf" class="form-control" placeholder="000.000.000-00" />
+                <span asp-validation-for="Cpf" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Email">Email:</label>
+                <input asp-for="Email" class="form-control" />
+                <span asp-validation-for="Email" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Telefone">Telefone:</label>
+                <input asp-for="Telefone" class="form-control" placeholder="(  )     -    " />
+                <span asp-validation-for="Telefone" class="text-danger"></span>
+            </div>
+
+            <div class="buttons">
+                <button type="submit" class="btn btn-primary">
+                    <img src="/assets/plus.png" alt="Ícone de adicionar" class="btn-icon">Cadastrar
+                </button>
+
+                <a href="@Url.Action("Listagem", "Pacientes" )" class="btn btn-secondary">
+                    <img src="~/assets/back.png" alt="Voltar" class="btn-icon">Voltar
+                </a>
+            </div>
+        </form>
+    </section>
+</main>

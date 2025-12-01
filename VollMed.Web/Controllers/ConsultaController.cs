@@ -1,6 +1,7 @@
 ﻿using VollMed.Web.Dtos;
 using VollMed.Web.Exceptions;
 using VollMed.Web.Interfaces;
+using VollMed.Web.Domain;
 using Microsoft.AspNetCore.Mvc;
 
 namespace VollMed.Web.Controllers
@@ -37,8 +38,14 @@ namespace VollMed.Web.Controllers
             var dados = id.HasValue
                 ? await _consultaservice.CarregarPorIdAsync(id.Value)
                 : new ConsultaDto { Data = DateTime.Now };
+
+            // Carregar todas as especialidades disponíveis
+            ViewData["Especialidades"] = Enum.GetValues(typeof(Especialidade)).Cast<Especialidade>().ToList();
+
             PaginatedList<MedicoDto> medicos = await _vollMedApiService.WithContext(HttpContext).ListarMedicos(1);
             ViewData["Medicos"] = medicos.Items;
+            PaginatedList<PacienteDto> pacientes = await _vollMedApiService.WithContext(HttpContext).ListarPacientes(1);
+            ViewData["Pacientes"] = pacientes.Items;
             return View(PaginaCadastro, dados);
         }
 
@@ -54,8 +61,11 @@ namespace VollMed.Web.Controllers
 
             if (!ModelState.IsValid)
             {
+                ViewData["Especialidades"] = Enum.GetValues(typeof(Especialidade)).Cast<Especialidade>().ToList();
                 PaginatedList<MedicoDto> medicos = await _vollMedApiService.WithContext(HttpContext).ListarMedicos(1);
-                ViewData["Medicos"] = null; // medicos.Items;
+                ViewData["Medicos"] = medicos.Items;
+                PaginatedList<PacienteDto> pacientes = await _vollMedApiService.WithContext(HttpContext).ListarPacientes(1);
+                ViewData["Pacientes"] = pacientes.Items;
                 return View(PaginaCadastro, dados);
             }
 

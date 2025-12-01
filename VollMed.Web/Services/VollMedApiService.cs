@@ -115,44 +115,46 @@ namespace VollMed.Web.Services
 
         #region Paciente
 
-        //public async Task<PacienteDto> ObterFormularioPaciente(long? pacienteId, string pacienteCpf)
-        //{
-        //    if(!string.IsNullOrEmpty(pacienteCpf))
-        //        return await ObterPacientePorCpf(pacienteCpf);
+        public async Task<PaginatedList<PacienteDto>> ListarPacientes(int? page)
+        {
+            var url = $"{_baseUri}/paciente/listar?page={page ?? 1}";
+            return await _httpClient.GetFromJsonAsync<PaginatedList<PacienteDto>>(url)
+                   ?? new PaginatedList<PacienteDto>(new List<PacienteDto>(), 0, page ?? 1, 10);
+        }
 
-        //    return await ObterPaciente(pacienteId);
-        //}
+        public async Task<PacienteDto> ObterFormularioPaciente(long? pacienteId)
+        {
+            var url = $"{_baseUri}/Paciente/formulario/{pacienteId}";
+            return await _httpClient.GetFromJsonAsync<PacienteDto>(url) ?? new PacienteDto();
+        }
 
-        //private async Task<PacienteDto> ObterPaciente(long? pacienteId)
-        //{
-        //    var url = $"{_baseUri}/Paciente/formulario/{pacienteId}";
-        //    return await _httpClient.GetFromJsonAsync<PacienteDto>(url) ?? new PacienteDto();
-        //}
+        public async Task<PacienteDto> SalvarPaciente(PacienteDto input)
+        {
+            var url = $"{_baseUri}/paciente/salvar";
+            var response = await _httpClient.PostAsJsonAsync(url, input);
 
-        //private async Task<PacienteDto?> ObterPacientePorCpf(string pacienteCpf)
-        //{
-        //    var url = $"{_baseUri}/Paciente/formularioporcpf/{pacienteCpf}";
-        //    var response = await _httpClient.GetAsync(url);
+            if (!response.IsSuccessStatusCode)
+            {
+                var erro = await response.Content.ReadAsStringAsync();
+                throw new Exception($"Erro ao salvar paciente: {erro}");
+            }
 
-        //    if (response.IsSuccessStatusCode)
-        //    {
-        //        return await response.Content.ReadFromJsonAsync<PacienteDto>();
-        //    }
+            return await response.Content.ReadFromJsonAsync<PacienteDto>();
+        }
 
-        //    // opcional: lê o erro retornado pela API
-        //    var erro = await response.Content.ReadAsStringAsync();
-        //    Console.WriteLine($"Erro ao buscar paciente: {erro}");
-
-        //    return null; // ou new PacienteDto(), dependendo da lógica
-        //}
-
-        //private async Task<PacienteDto> SalvarPaciente(PacienteDto input)
-        //{
-        //    var url = $"{_baseUri}/paciente/salvar";
-        //    var response = await _httpClient.PostAsJsonAsync(url, input);
-        //    return await response.Content.ReadFromJsonAsync<PacienteDto>();
-        //}
-
+        public async Task ExcluirPaciente(long pacienteId)
+        {
+            try
+            {
+                var url = $"{_baseUri}/paciente/excluir";
+                var response = await _httpClient.DeleteAsync($"{url}/{pacienteId}");
+                response.EnsureSuccessStatusCode();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
 
         #endregion
 
