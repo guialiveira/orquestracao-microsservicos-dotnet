@@ -54,5 +54,12 @@ namespace Medicos.ServiceAPI.Controllers
             await _service.ExcluirAsync(id);
             return Ok();
         }
+
+        [HttpPost("ImportarLote")]
+        public async Task<IActionResult> ImportarLote([FromQuery] int quantidade = 1000)
+        {
+            var resultado = await _service.ImportarLoteAsync(quantidade);
+            return Ok(resultado);
+        }
     }
 }

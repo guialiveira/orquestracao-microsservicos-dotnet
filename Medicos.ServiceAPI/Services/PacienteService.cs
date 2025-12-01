@@ -2,6 +2,7 @@ using Medicos.ServiceAPI.Domain;
 using Medicos.ServiceAPI.Dto;
 using Medicos.ServiceAPI.Exceptions;
 using Medicos.ServiceAPI.Interfaces;
+using System.Diagnostics;
 
 namespace Medicos.ServiceAPI.Services
 {
@@ -61,6 +62,48 @@ namespace Medicos.ServiceAPI.Services
         public async Task ExcluirAsync(long id)
         {
             await _repository.DeleteByIdAsync(id);
+        }
+
+        public async Task<object> ImportarLoteAsync(int quantidade)
+        {
+            var sw = Stopwatch.StartNew();
+            int batchSize = 50;
+            int totalBatches = quantidade / batchSize;
+
+            Console.WriteLine($"\n=== Iniciando importação de {quantidade} pacientes ===");
+
+            for (int batch = 0; batch < totalBatches; batch++)
+            {
+                for (int i = 0; i < batchSize; i++)
+                {
+                    int numero = (batch * batchSize) + i + 1;
+                    var pacienteDto = new PacienteDto
+                    {
+                        Nome = $"Paciente Teste {numero}",
+                        Cpf = $"{10000000000L + numero}",
+                        Email = $"paciente{numero}@teste.com",
+                        Telefone = $"(11) 9{numero:D8}"
+                    };
+
+                    var paciente = new Paciente(pacienteDto);
+                    await _repository.InsertAsync(paciente);
+                }
+
+                Console.WriteLine($"[{DateTime.Now:HH:mm:ss}] Importando lote {batch + 1}/{totalBatches}... ({(batch + 1) * batchSize} pacientes inseridos)");
+
+                // Simula processamento lento para manter o lock no banco por mais tempo
+                Thread.Sleep(1000);
+            }
+
+            sw.Stop();
+            Console.WriteLine($"=== Importação concluída em {sw.Elapsed.TotalSeconds:F2}s ===\n");
+
+            return new
+            {
+                QuantidadeImportada = quantidade,
+                TempoDecorrido = $"{sw.Elapsed.TotalSeconds:F2}s",
+                Mensagem = "Importação concluída com sucesso"
+            };
         }
     }
 }
