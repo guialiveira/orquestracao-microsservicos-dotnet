@@ -9,7 +9,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container
 builder.Services.AddDbContext<MedicosDbContext>(options =>
-    options.UseSqlite(builder.Configuration.GetConnectionString("SqliteConnection")
+    options.UseSqlServer(builder.Configuration.GetConnectionString("SqlServerConnection")
 ));
 
 builder.Services.AddControllers();
@@ -29,6 +29,11 @@ var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {
     var context = scope.ServiceProvider.GetRequiredService<MedicosDbContext>();
+
+    // Desabilitar READ_COMMITTED_SNAPSHOT para demonstrar lock de banco compartilhado
+    // No SQL Server, isso faz com que leituras bloqueiem escritas (similar ao PRAGMA journal_mode=DELETE do SQLite)
+    context.Database.ExecuteSqlRaw("ALTER DATABASE VollMedMedicos SET READ_COMMITTED_SNAPSHOT OFF;");
+
     DbSeeder.Seed(context);
 }
 

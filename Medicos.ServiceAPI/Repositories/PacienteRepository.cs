@@ -28,13 +28,18 @@ namespace Medicos.ServiceAPI.Repositories
 
         public async Task InsertRangeAsync(IEnumerable<Paciente> pacientes, Action<int> onProgress)
         {
-            // Iniciar transação explícita (funciona com SQLite)
-            using var transaction = await _context.Database.BeginTransactionAsync();
+            // Inicia transação com isolation level SERIALIZABLE para demonstrar locks no SQL Server
+            // SERIALIZABLE é o nível mais restritivo e garante lock exclusivo durante toda a transação
+            using var transaction = await _context.Database.BeginTransactionAsync(System.Data.IsolationLevel.Serializable);
 
             try
             {
+                // Adquire lock exclusivo na tabela Pacientes (equivalente ao BEGIN EXCLUSIVE do SQLite)
+                // TABLOCKX garante que nenhuma outra transação pode ler ou escrever na tabela
+                await _context.Database.ExecuteSqlRawAsync("SELECT TOP 0 * FROM pacientes WITH (TABLOCKX)");
+
                 int count = 0;
-                int batchSize = 50;
+                int batchSize = 500;
                 var batch = new List<Paciente>();
 
                 foreach (var paciente in pacientes)
@@ -42,7 +47,7 @@ namespace Medicos.ServiceAPI.Repositories
                     batch.Add(paciente);
                     count++;
 
-                    // Salvar em batches de 50
+
                     if (batch.Count >= batchSize)
                     {
                         _context.Pacientes.AddRange(batch);
@@ -51,7 +56,7 @@ namespace Medicos.ServiceAPI.Repositories
                         onProgress(count);  // Callback para logging
 
                         // Lock MANTIDO durante o sleep (transação ainda aberta)
-                        Thread.Sleep(1000);
+                        Thread.Sleep(5000);
 
                         batch.Clear();
                     }
@@ -65,12 +70,12 @@ namespace Medicos.ServiceAPI.Repositories
                     onProgress(count);
                 }
 
-                // Comitar transação - lock liberado APENAS aqui
+                // Commit da transação (libera todos os locks)
                 await transaction.CommitAsync();
             }
             catch
             {
-                // Rollback em caso de erro
+                // Rollback em caso de erro (libera todos os locks)
                 await transaction.RollbackAsync();
                 throw;
             }
