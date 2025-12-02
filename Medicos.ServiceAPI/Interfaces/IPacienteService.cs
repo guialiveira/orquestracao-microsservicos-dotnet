@@ -9,5 +9,6 @@ namespace Medicos.ServiceAPI.Interfaces
         Task ExcluirAsync(long id);
         Task<PaginatedList<PacienteDto>> ListarAsync(int? page);
         IEnumerable<PacienteDto> ListarTodos();
+        Task<object> ImportarLoteAsync(int quantidade);
     }
 }

@@ -2,6 +2,7 @@ using Medicos.ServiceAPI.Domain;
 using Medicos.ServiceAPI.Dto;
 using Medicos.ServiceAPI.Exceptions;
 using Medicos.ServiceAPI.Interfaces;
+using System.Diagnostics;
 
 namespace Medicos.ServiceAPI.Services
 {
@@ -61,6 +62,43 @@ namespace Medicos.ServiceAPI.Services
         public async Task ExcluirAsync(long id)
         {
             await _repository.DeleteByIdAsync(id);
+        }
+
+        public async Task<object> ImportarLoteAsync(int quantidade)
+        {
+            var sw = Stopwatch.StartNew();
+
+            Console.WriteLine($"\n=== Iniciando importação de {quantidade} pacientes ===");
+
+            // Gerar todos os pacientes
+            var pacientes = new List<Paciente>();
+            for (int i = 1; i <= quantidade; i++)
+            {
+                var dto = new PacienteDto
+                {
+                    Nome = $"Paciente Teste {i}",
+                    Cpf = $"{10000000000L + i}",
+                    Email = $"paciente{i}@teste.com",
+                    Telefone = $"(11) 9{i:D8}"
+                };
+                pacientes.Add(new Paciente(dto));
+            }
+
+            // Inserir com transação (lock mantido durante toda operação)
+            await _repository.InsertRangeAsync(pacientes, count =>
+            {
+                Console.WriteLine($"[{DateTime.Now:HH:mm:ss}] Importados {count} pacientes...");
+            });
+
+            sw.Stop();
+            Console.WriteLine($"=== Importação concluída em {sw.Elapsed.TotalSeconds:F2}s ===\n");
+
+            return new
+            {
+                QuantidadeImportada = quantidade,
+                TempoDecorrido = $"{sw.Elapsed.TotalSeconds:F2}s",
+                Mensagem = "Importação concluída com sucesso"
+            };
         }
     }
 }
