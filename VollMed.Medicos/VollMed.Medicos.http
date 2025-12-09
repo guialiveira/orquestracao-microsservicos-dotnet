@@ -1,0 +1,6 @@
+@VollMed.Medicos_HostAddress = http://localhost:5183
+
+GET {{VollMed.Medicos_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
