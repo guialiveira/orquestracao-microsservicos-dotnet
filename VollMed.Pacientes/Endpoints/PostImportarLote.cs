@@ -1,5 +1,6 @@
 using Bogus;
 using Bogus.Extensions.Brazil;
+using Microsoft.AspNetCore.Mvc;
 using VollMed.Pacientes.Domain.Entities;
 using VollMed.Pacientes.Domain.Interfaces;
 
@@ -7,15 +8,16 @@ namespace VollMed.Pacientes.Endpoints
 {
     public static class PostImportarLote
     {
+        public record PostImportarRequest(int Quantidade);
         public record Response(
             int TotalImportados,
             string TempoDecorrido,
             string Mensagem);
 
         public static async Task<IResult> Handle(
-            int quantidade,
+            PostImportarRequest request,
             IPacienteRepository repository,
-            ILogger logger)
+            ILogger<PostImportarRequest> logger)
         {
             var stopwatch = System.Diagnostics.Stopwatch.StartNew();
 
@@ -29,20 +31,20 @@ namespace VollMed.Pacientes.Endpoints
                     f.Internet.Email(),
                     f.Phone.PhoneNumber("(##) #####-####")));
 
-            var pacientes = faker.Generate(quantidade);
+            var pacientes = faker.Generate(request.Quantidade).DistinctBy(p => p.Email);
 
             // Import with progress logging
             await repository.InsertRangeAsync(pacientes, count =>
             {
-                logger.LogInformation($"Importados {count} de {quantidade} pacientes...");
+                logger.LogInformation($"Importados {count} de {request.Quantidade} pacientes...");
             });
 
             stopwatch.Stop();
 
             var response = new Response(
-                quantidade,
+                request.Quantidade,
                 $"{stopwatch.ElapsedMilliseconds}ms",
-                $"{quantidade} pacientes importados com sucesso (com lock de tabela demonstrado)");
+                $"{request.Quantidade} pacientes importados com sucesso (com lock de tabela demonstrado)");
 
             return Results.Ok(response);
         }
