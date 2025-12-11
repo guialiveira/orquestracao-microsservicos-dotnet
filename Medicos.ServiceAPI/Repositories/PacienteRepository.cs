@@ -106,5 +106,10 @@ namespace Medicos.ServiceAPI.Repositories
         {
             return _context.Pacientes.AsQueryable();
         }
+
+        public Task DeleteAllAsync()
+        {
+            return _context.Pacientes.ExecuteDeleteAsync();
+        }
     }
 }

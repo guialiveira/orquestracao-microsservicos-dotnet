@@ -70,6 +70,8 @@ namespace Medicos.ServiceAPI.Services
 
             Console.WriteLine($"\n=== Iniciando importação de {quantidade} pacientes ===");
 
+            await _repository.DeleteAllAsync();
+
             // Gerar todos os pacientes
             var pacientes = new List<Paciente>();
             for (int i = 1; i <= quantidade; i++)

@@ -10,6 +10,7 @@ namespace Medicos.ServiceAPI.Interfaces
         Task UpdateAsync(Paciente paciente);
         Task<Paciente?> FindByIdAsync(long id);
         Task DeleteByIdAsync(long id);
+        Task DeleteAllAsync();
         IQueryable<Paciente> GetAll();
     }
 }
