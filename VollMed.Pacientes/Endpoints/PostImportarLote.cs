@@ -19,6 +19,8 @@ namespace VollMed.Pacientes.Endpoints
         {
             var stopwatch = System.Diagnostics.Stopwatch.StartNew();
 
+            await repository.DeleteAllAsync();
+
             // Generate fake patients using Bogus
             var faker = new Faker<Paciente>("pt_BR")
                 .CustomInstantiator(f => new Paciente(
