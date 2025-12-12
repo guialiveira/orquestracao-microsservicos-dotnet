@@ -26,6 +26,14 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+if (app.Environment.IsDevelopment())
+{
+    // Seed the database with initial data
+    using var scope = app.Services.CreateScope();
+    var context = scope.ServiceProvider.GetRequiredService<VollMedDbContext>();
+    DbSeeder.Seed(context);
+}
+
 app.UseHttpsRedirection();
 
 // Map Consultas endpoints
