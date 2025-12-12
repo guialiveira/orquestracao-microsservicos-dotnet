@@ -8,6 +8,14 @@ namespace VollMed.Medicos.Domain.Entities
     [Table("pacientes")]
     public class Paciente
     {
+        public Paciente(string nome, string cpf, string email, string telefone)
+        {
+            Nome = nome;
+            Cpf = cpf;
+            Email = email;
+            Telefone = telefone;
+        }
+
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public long Id { get; private set; }
@@ -15,5 +23,6 @@ namespace VollMed.Medicos.Domain.Entities
         public string Cpf { get; private set; } = string.Empty;
         public string Email { get; private set; } = string.Empty;
         public string Telefone { get; private set; } = string.Empty;
+
     }
 }
