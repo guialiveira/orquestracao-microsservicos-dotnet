@@ -9,25 +9,25 @@ namespace VollMed.Consultas.Domain.Entities
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public long Id { get; private set; }
-
-        public string Paciente { get; private set; } = string.Empty;
+        public long PacienteId { get; set; }
+        public string PacienteNome { get; private set; } = string.Empty;
         public long MedicoId { get; private set; }
-        public DateTime Data { get; private set; }
-
-        // Navigation property for FK (same database)
-        public Medico? Medico { get; private set; }
+        public string MedicoNome { get; set; }
+        public DateTime Data { get; set; }
 
         public Consulta() { }
 
-        public Consulta(long medicoId, string paciente, DateTime data)
+        public Consulta(long medicoId, string medicoNome, long pacienteId, string pacienteNome, DateTime data)
         {
-            ModificarDados(medicoId, paciente, data);
+            ModificarDados(medicoId, medicoNome, pacienteId, pacienteNome, data);
         }
 
-        public void ModificarDados(long medicoId, string paciente, DateTime data)
+        public void ModificarDados(long medicoId, string medicoNome, long pacienteId, string pacienteNome, DateTime data)
         {
             MedicoId = medicoId;
-            Paciente = paciente;
+            MedicoNome = medicoNome;
+            PacienteId = pacienteId;
+            PacienteNome = pacienteNome;
             Data = data;
         }
     }

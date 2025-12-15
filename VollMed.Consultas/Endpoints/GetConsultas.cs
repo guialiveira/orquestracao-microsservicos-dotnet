@@ -11,10 +11,9 @@ namespace VollMed.Consultas.Endpoints
             long Id,
             long MedicoId,
             string MedicoNome,
-            string Paciente,
+            long PacienteId,
             string PacienteNome,
-            DateTime Data,
-            Especialidade Especialidade);
+            DateTime Data);
 
         public static async Task<IResult> Handle(
             int page,
@@ -23,22 +22,16 @@ namespace VollMed.Consultas.Endpoints
             const int pageSize = 5;
 
             var consultas = await dbContext.Consultas
-                .Include(c => c.Medico)
                 .OrderBy(c => c.Data)
                 .ToListAsync();
-
-            // Get all pacientes for lookup
-            var pacientes = await dbContext.Pacientes.ToListAsync();
-            var pacientesDict = pacientes.ToDictionary(p => p.Cpf, p => p);
 
             var allDtos = consultas.Select(c => new ConsultaListResponse(
                 c.Id,
                 c.MedicoId,
-                c.Medico?.Nome ?? "Médico",
-                c.Paciente,
-                pacientesDict.ContainsKey(c.Paciente) ? pacientesDict[c.Paciente].Nome : "Paciente",
-                c.Data,
-                c.Medico?.Especialidade ?? Especialidade.ClinicaGeral
+                c.MedicoNome,
+                c.PacienteId,
+                c.PacienteNome,
+                c.Data
             )).ToList();
 
             var totalCount = allDtos.Count;

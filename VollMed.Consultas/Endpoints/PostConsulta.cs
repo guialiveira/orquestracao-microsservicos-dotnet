@@ -9,13 +9,15 @@ namespace VollMed.Consultas.Endpoints
     {
         public record CreateConsultaRequest(
             [Required] long MedicoId,
-            [Required, StringLength(11, MinimumLength = 11)] string Paciente,
+            [Required] long PacienteId,
             [Required] DateTime Data);
 
         public record CreateConsultaResponse(
             long Id,
             long MedicoId,
-            string Paciente,
+            string MedicoNome,
+            long PacienteId,
+            string PacienteNome,
             DateTime Data);
 
         public static async Task<IResult> Handle(
@@ -24,23 +26,31 @@ namespace VollMed.Consultas.Endpoints
         {
             try
             {
-                // Validate Medico exists
-                var medicoExists = await dbContext.Medicos.AnyAsync(m => m.Id == request.MedicoId);
-                if (!medicoExists)
-                {
-                    return Results.Problem(
-                        detail: "Médico não encontrado.",
-                        statusCode: StatusCodes.Status400BadRequest);
-                }
+                //// Validate Medico exists
+                //var medicoExists = await dbContext.Medicos.AnyAsync(m => m.Id == request.MedicoId);
+                //if (!medicoExists)
+                //{
+                //    return Results.Problem(
+                //        detail: "Médico não encontrado.",
+                //        statusCode: StatusCodes.Status400BadRequest);
+                //}
 
-                var consulta = new Consulta(request.MedicoId, request.Paciente, request.Data);
+                var consulta = new Consulta(
+                    medicoId: request.MedicoId
+                    , medicoNome: "Médico Desconhecido"
+                    , pacienteId: request.PacienteId
+                    , pacienteNome: "Paciente Desconhecido"
+                    , request.Data);
+
                 await dbContext.Consultas.AddAsync(consulta);
                 await dbContext.SaveChangesAsync();
 
                 var response = new CreateConsultaResponse(
                     consulta.Id,
                     consulta.MedicoId,
-                    consulta.Paciente,
+                    consulta.MedicoNome,
+                    consulta.PacienteId,
+                    consulta.PacienteNome,
                     consulta.Data);
 
                 return Results.Created($"/api/consultas/{consulta.Id}", response);

@@ -1,6 +1,5 @@
 using Microsoft.EntityFrameworkCore;
 using VollMed.Consultas.Data;
-using VollMed.Consultas.Domain.Enums;
 
 namespace VollMed.Consultas.Endpoints
 {
@@ -10,10 +9,9 @@ namespace VollMed.Consultas.Endpoints
             long Id,
             long MedicoId,
             string MedicoNome,
-            string Paciente,
+            long PacienteId,
             string? PacienteNome,
-            DateTime Data,
-            Especialidade Especialidade);
+            DateTime Data);
 
         public static async Task<IResult> Handle(
             long id,
@@ -21,11 +19,10 @@ namespace VollMed.Consultas.Endpoints
         {
             if (id == 0)
             {
-                return Results.Ok(new ConsultaDetailResponse(0, 0, "", "", "", DateTime.Now, Especialidade.ClinicaGeral));
+                return Results.NotFound();
             }
 
             var consulta = await dbContext.Consultas
-                .Include(c => c.Medico)
                 .SingleOrDefaultAsync(c => c.Id == id);
 
             if (consulta == null)
@@ -33,18 +30,13 @@ namespace VollMed.Consultas.Endpoints
                 return Results.NotFound();
             }
 
-            var paciente = await dbContext.Pacientes
-                .Where(p => p.Cpf == consulta.Paciente)
-                .FirstOrDefaultAsync();
-
             var response = new ConsultaDetailResponse(
                 consulta.Id,
                 consulta.MedicoId,
-                consulta.Medico?.Nome ?? "",
-                consulta.Paciente,
-                paciente?.Nome,
-                consulta.Data,
-                consulta.Medico?.Especialidade ?? Especialidade.ClinicaGeral);
+                consulta.MedicoNome ?? "",
+                consulta.PacienteId,
+                consulta.PacienteNome,
+                consulta.Data);
 
             return Results.Ok(response);
         }

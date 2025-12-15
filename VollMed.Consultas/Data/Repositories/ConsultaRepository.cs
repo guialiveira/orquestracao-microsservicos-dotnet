@@ -16,7 +16,6 @@ namespace VollMed.Consultas.Data.Repositories
         public IQueryable<Consulta> GetAllOrderedByData()
         {
             return _context.Consultas
-                .Include(c => c.Medico)
                 .OrderBy(c => c.Data)
                 .AsQueryable();
         }
@@ -30,7 +29,6 @@ namespace VollMed.Consultas.Data.Repositories
         public async Task<Consulta?> FindByIdAsync(long id)
         {
             return await _context.Consultas
-                .Include(c => c.Medico)
                 .SingleOrDefaultAsync(c => c.Id == id);
         }
 
