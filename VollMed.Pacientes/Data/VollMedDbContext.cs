@@ -7,11 +7,6 @@ namespace VollMed.Pacientes.Data
     {
         // This service only interacts with Pacientes
         public DbSet<Paciente> Pacientes { get; set; }
-
-        // Included for shared database context
-        public DbSet<Medico> Medicos { get; set; }
-        public DbSet<Consulta> Consultas { get; set; }
-
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -23,15 +18,6 @@ namespace VollMed.Pacientes.Data
 
             modelBuilder.Entity<Paciente>()
                 .HasIndex(p => p.Cpf)
-                .IsUnique();
-
-            // Configurar índices únicos para Medico
-            modelBuilder.Entity<Medico>()
-                .HasIndex(m => m.Email)
-                .IsUnique();
-
-            modelBuilder.Entity<Medico>()
-                .HasIndex(m => m.Crm)
                 .IsUnique();
         }
     }
