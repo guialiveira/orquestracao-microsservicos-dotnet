@@ -484,3 +484,4 @@ $RECYCLE.BIN/
 *.swp
 /Medicos.ServiceAPI/vollmed.db-shm
 /Medicos.ServiceAPI/vollmed.db-wal
+/NUL

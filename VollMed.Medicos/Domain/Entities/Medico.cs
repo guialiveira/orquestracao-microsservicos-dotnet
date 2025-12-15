@@ -21,10 +21,6 @@ namespace VollMed.Medicos.Domain.Entities
 
         public Especialidade Especialidade { get; private set; }
 
-        // Note: Consultas navigation property kept for FK integrity (same database)
-        // Not used directly in this service but maintains relationship
-        public ICollection<Consulta> Consultas { get; private set; } = new List<Consulta>();
-
         public Medico() { }
 
         public Medico(string nome, string email, string telefone, string crm, Especialidade especialidade)
@@ -40,17 +36,5 @@ namespace VollMed.Medicos.Domain.Entities
             Crm = crm;
             Especialidade = especialidade;
         }
-    }
-
-    // Placeholder for Consulta to maintain FK relationship (same database)
-    [Table("consultas")]
-    public class Consulta
-    {
-        [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public long Id { get; private set; }
-        public string Paciente { get; private set; } = string.Empty;
-        public long MedicoId { get; private set; }
-        public DateTime Data { get; private set; }
     }
 }
