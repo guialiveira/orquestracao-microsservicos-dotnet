@@ -2,6 +2,7 @@ using System.ComponentModel.DataAnnotations;
 using Microsoft.EntityFrameworkCore;
 using VollMed.Consultas.Data;
 using VollMed.Consultas.Domain.Entities;
+using VollMed.Consultas.Services;
 
 namespace VollMed.Consultas.Endpoints
 {
@@ -22,24 +23,20 @@ namespace VollMed.Consultas.Endpoints
 
         public static async Task<IResult> Handle(
             CreateConsultaRequest request,
-            VollMedDbContext dbContext)
+            VollMedDbContext dbContext,
+            IMedicosApi medicosApi,
+            IPacientesApi pacientesApi)
         {
             try
             {
-                //// Validate Medico exists
-                //var medicoExists = await dbContext.Medicos.AnyAsync(m => m.Id == request.MedicoId);
-                //if (!medicoExists)
-                //{
-                //    return Results.Problem(
-                //        detail: "Médico não encontrado.",
-                //        statusCode: StatusCodes.Status400BadRequest);
-                //}
+                var medico = await medicosApi.GetByIdAsync(request.MedicoId);
+                var paciente = await pacientesApi.GetByIdAsync(request.PacienteId);
 
                 var consulta = new Consulta(
                     medicoId: request.MedicoId
-                    , medicoNome: "Médico Desconhecido"
+                    , medicoNome: medico?.Nome ?? "Médico Desconhecido"
                     , pacienteId: request.PacienteId
-                    , pacienteNome: "Paciente Desconhecido"
+                    , pacienteNome: paciente?.Nome ?? "Paciente Desconhecido"
                     , request.Data);
 
                 await dbContext.Consultas.AddAsync(consulta);
