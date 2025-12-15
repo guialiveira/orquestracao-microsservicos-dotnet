@@ -47,6 +47,8 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 // Map Consultas endpoints
-app.MapConsultasEndpoints();
+app
+    .MapConsultasEndpoints()
+    .MapReceitasEndpoints();
 
 app.Run();

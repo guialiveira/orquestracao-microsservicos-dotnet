@@ -1,3 +1,5 @@
+using Microsoft.AspNetCore.Builder;
+
 namespace VollMed.Consultas.Endpoints
 {
     public static class ConsultasEndpointsExtensions
@@ -30,6 +32,20 @@ namespace VollMed.Consultas.Endpoints
             group.MapDelete("{id}", DeleteConsulta.Handle)
                 .WithName("ExcluirConsulta")
                 .Produces(StatusCodes.Status204NoContent);
+
+            return app;
+        }
+
+        public static WebApplication MapReceitasEndpoints(this WebApplication app)
+        {
+            var group = app.MapGroup("/api/receitas")
+                .WithTags("Receitas");
+
+            group.MapPost("", PostReceita.Handle)
+                .WithName("CriarReceita")
+                .Produces<PostReceita.PostReceitaResponse>(StatusCodes.Status201Created)
+                .Produces(StatusCodes.Status404NotFound)
+                .Produces(StatusCodes.Status400BadRequest);
 
             return app;
         }
