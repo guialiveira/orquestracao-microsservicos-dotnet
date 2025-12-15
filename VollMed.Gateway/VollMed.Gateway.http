@@ -1,0 +1,6 @@
+@VollMed.Gateway_HostAddress = http://localhost:5066
+
+GET {{VollMed.Gateway_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

@@ -20,13 +20,16 @@ builder.Services.AddTransient<IConsultaRepository, ConsultaRepository>();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+string apiUris = builder.Configuration["Api:Uri"]
+    ?? throw new Exception("Uri da API VollMed não configurada!");
+
 builder.Services
     .AddRefitClient<IMedicosApi>()
-    .ConfigureHttpClient(c => c.BaseAddress = new Uri("https://localhost:7001"));
+    .ConfigureHttpClient(c => c.BaseAddress = new Uri(apiUris));
 
 builder.Services
     .AddRefitClient<IPacientesApi>()
-    .ConfigureHttpClient(c => c.BaseAddress = new Uri("https://localhost:7002"));
+    .ConfigureHttpClient(c => c.BaseAddress = new Uri(apiUris));
 
 builder.Services.AddMassTransit(x =>
 {
