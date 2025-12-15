@@ -1,9 +1,10 @@
+using MassTransit;
 using Microsoft.EntityFrameworkCore;
+using Refit;
 using VollMed.Consultas.Data;
 using VollMed.Consultas.Data.Repositories;
 using VollMed.Consultas.Domain.Interfaces;
 using VollMed.Consultas.Endpoints;
-using Refit;
 using VollMed.Consultas.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -26,6 +27,20 @@ builder.Services
 builder.Services
     .AddRefitClient<IPacientesApi>()
     .ConfigureHttpClient(c => c.BaseAddress = new Uri("https://localhost:7002"));
+
+builder.Services.AddMassTransit(x =>
+{
+    x.UsingRabbitMq((ctx, cfg) =>
+    {
+        var rabbitMqConfig = builder.Configuration.GetSection("RabbitMQ");
+
+        cfg.Host(rabbitMqConfig["Host"], Convert.ToUInt16(rabbitMqConfig["Port"]), "/", h =>
+        {
+            h.Username(rabbitMqConfig["Username"]!);
+            h.Password(rabbitMqConfig["Password"]!);
+        });
+    });
+});
 
 var app = builder.Build();
 

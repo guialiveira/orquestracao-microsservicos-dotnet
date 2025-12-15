@@ -1,6 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using MassTransit;
+using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using VollMed.Consultas.Data;
+using VollMed.Shared.Eventos;
 
 namespace VollMed.Consultas.Endpoints
 {
@@ -16,7 +18,8 @@ namespace VollMed.Consultas.Endpoints
 
         public static async Task<IResult> Handle(
             PostReceitaRequest request,
-            VollMedDbContext context
+            VollMedDbContext context,
+            IPublishEndpoint publishEndpoint
             )
         {
             var consulta = await context.Consultas
@@ -26,6 +29,16 @@ namespace VollMed.Consultas.Endpoints
 
             consulta.Receita = request.Receita;
             await context.SaveChangesAsync();
+
+            // envio do email
+            var evento = new ReceitaCriadaEvent
+            {
+                ConsultaId = consulta.Id,
+                PacienteId = consulta.PacienteId,
+                MedicoId = consulta.MedicoId,
+                Receita  = consulta.Receita
+            };
+            await publishEndpoint.Publish(evento);
 
             return Results.Ok(new PostReceitaResponse(consulta.Id, consulta.Receita));
         }
