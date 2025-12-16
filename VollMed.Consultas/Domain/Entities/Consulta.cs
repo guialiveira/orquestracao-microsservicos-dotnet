@@ -14,7 +14,7 @@ namespace VollMed.Consultas.Domain.Entities
         public long MedicoId { get; private set; }
         public string MedicoNome { get; set; }
         public DateTime Data { get; set; }
-        public string Receita { get; set; }
+        public string? Receita { get; set; }
 
         public Consulta() { }
 
