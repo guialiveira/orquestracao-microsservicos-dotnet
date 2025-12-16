@@ -9,6 +9,8 @@ using VollMed.Pacientes.Endpoints;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.AddServiceDefaults();
+
 // Add DbContext
 builder.Services.AddDbContext<VollMedDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("SqlServerConnection")));
@@ -38,6 +40,8 @@ builder.Services.AddMassTransit(x =>
 });
 
 var app = builder.Build();
+
+app.MapDefaultEndpoints();
 
 // Configure Swagger in Development
 if (app.Environment.IsDevelopment())

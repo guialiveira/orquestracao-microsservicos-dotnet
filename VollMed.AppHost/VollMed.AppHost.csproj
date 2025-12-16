@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <Sdk Name="Aspire.AppHost.Sdk" Version="9.5.0" />
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <UserSecretsId>75ecc2da-ea38-4da0-b70e-6ccaee62edd1</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Aspire.Hosting.AppHost" Version="9.5.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\VollMed.Consultas\VollMed.Consultas.csproj" />
+    <ProjectReference Include="..\VollMed.Gateway\VollMed.Gateway.csproj" />
+    <ProjectReference Include="..\VollMed.Medicos\VollMed.Medicos.csproj" />
+    <ProjectReference Include="..\VollMed.Pacientes\VollMed.Pacientes.csproj" />
+  </ItemGroup>
+
+</Project>

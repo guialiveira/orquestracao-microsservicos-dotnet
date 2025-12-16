@@ -19,6 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\VollMed.ServiceDefaults\VollMed.ServiceDefaults.csproj" />
     <ProjectReference Include="..\VollMed.Shared.Eventos\VollMed.Shared.Eventos.csproj" />
     <ProjectReference Include="..\VollMed.Shared.Pagination\VollMed.Shared.Pagination.csproj" />
   </ItemGroup>
