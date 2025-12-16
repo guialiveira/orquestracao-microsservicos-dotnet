@@ -5,9 +5,14 @@ using VollMed.Consultas.Data;
 using VollMed.Consultas.Data.Repositories;
 using VollMed.Consultas.Domain.Interfaces;
 using VollMed.Consultas.Endpoints;
+using VollMed.Consultas.Handlers;
 using VollMed.Consultas.Services;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddHttpContextAccessor();
+
+builder.Services.AddTransient<AuthHandler>();
 
 // Add DbContext
 builder.Services.AddDbContext<VollMedDbContext>(options =>
@@ -25,11 +30,13 @@ string apiUris = builder.Configuration["Api:Uri"]
 
 builder.Services
     .AddRefitClient<IMedicosApi>()
-    .ConfigureHttpClient(c => c.BaseAddress = new Uri(apiUris));
+    .ConfigureHttpClient(c => c.BaseAddress = new Uri(apiUris))
+    .AddHttpMessageHandler<AuthHandler>();
 
 builder.Services
     .AddRefitClient<IPacientesApi>()
-    .ConfigureHttpClient(c => c.BaseAddress = new Uri(apiUris));
+    .ConfigureHttpClient(c => c.BaseAddress = new Uri(apiUris))
+    .AddHttpMessageHandler<AuthHandler>();
 
 builder.Services.AddMassTransit(x =>
 {
