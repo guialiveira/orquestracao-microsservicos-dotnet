@@ -44,13 +44,8 @@ builder.Services.AddMassTransit(x =>
 {
     x.UsingRabbitMq((ctx, cfg) =>
     {
-        var rabbitMqConfig = builder.Configuration.GetSection("RabbitMQ");
-
-        cfg.Host(rabbitMqConfig["Host"], Convert.ToUInt16(rabbitMqConfig["Port"]), "/", h =>
-        {
-            h.Username(rabbitMqConfig["Username"]!);
-            h.Password(rabbitMqConfig["Password"]!);
-        });
+        var rabbitMqConfig = builder.Configuration.GetConnectionString("rabbitmq");
+        cfg.Host(rabbitMqConfig);
     });
 });
 
