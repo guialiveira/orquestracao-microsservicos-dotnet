@@ -1,10 +1,22 @@
 var builder = DistributedApplication.CreateBuilder(args);
 
-var apiConsultas = builder.AddProject<Projects.VollMed_Consultas>("vollmed-consultas");
 
-var apiMedicos = builder.AddProject<Projects.VollMed_Medicos>("vollmed-medicos");
+var sqlServer = builder
+    .AddSqlServer("sqlserver")
+    .WithImageTag("2022-latest");
 
-var apiPacientes = builder.AddProject<Projects.VollMed_Pacientes>("vollmed-pacientes");
+var consultasDB = sqlServer.AddDatabase("consultasDB");
+var medicosDB = sqlServer.AddDatabase("medicosDB");
+var pacientesDB = sqlServer.AddDatabase("pacientesDB");
+
+var apiConsultas = builder.AddProject<Projects.VollMed_Consultas>("vollmed-consultas")
+    .WithReference(consultasDB);
+
+var apiMedicos = builder.AddProject<Projects.VollMed_Medicos>("vollmed-medicos")
+    .WithReference(medicosDB);
+
+var apiPacientes = builder.AddProject<Projects.VollMed_Pacientes>("vollmed-pacientes")
+    .WithReference(pacientesDB);
 
 builder.AddProject<Projects.VollMed_Gateway>("vollmed-gateway")
     .WithReference(apiConsultas)

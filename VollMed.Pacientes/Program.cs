@@ -13,7 +13,7 @@ builder.AddServiceDefaults();
 
 // Add DbContext
 builder.Services.AddDbContext<VollMedDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("SqlServerConnection")));
+    options.UseSqlServer(builder.Configuration.GetConnectionString("pacientesDB"), c => c.EnableRetryOnFailure()));
 
 // Add Repositories
 builder.Services.AddTransient<IPacienteRepository, PacienteRepository>();
@@ -50,13 +50,9 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-if (app.Environment.IsDevelopment())
-{
-    // Seed the database with initial data
-    using var scope = app.Services.CreateScope();
-    var context = scope.ServiceProvider.GetRequiredService<VollMedDbContext>();
-    DbSeeder.Seed(context);
-}
+using var scope = app.Services.CreateScope();
+var context = scope.ServiceProvider.GetRequiredService<VollMedDbContext>();
+DbSeeder.Seed(context);
 
 app.UseHttpsRedirection();
 
