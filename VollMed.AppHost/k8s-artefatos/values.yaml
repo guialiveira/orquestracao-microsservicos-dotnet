@@ -17,9 +17,17 @@ parameters:
     vollmed_gateway_image: "vollmed-gateway:latest"
 secrets:
   sqlserver:
-    MSSQL_SA_PASSWORD: ""
+    MSSQL_SA_PASSWORD: "Password123!"
   rabbitmq:
-    RABBITMQ_DEFAULT_PASS: ""
+    RABBITMQ_DEFAULT_PASS: "guest"
+  vollmed_consultas:
+    sqlserver_password: "Password123!"
+    rabbitmq_password: "guest"
+  vollmed_pacientes:
+    sqlserver_password: "Password123!"
+    rabbitmq_password: "guest"
+  vollmed_medicos:
+    sqlserver_password: "Password123!"
 config:
   postgres:
     POSTGRES_HOST_AUTH_METHOD: "scram-sha-256"
