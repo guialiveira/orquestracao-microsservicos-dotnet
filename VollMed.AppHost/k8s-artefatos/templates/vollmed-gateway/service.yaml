@@ -16,9 +16,5 @@ spec:
   ports:
     - name: "http"
       protocol: "TCP"
-      port: "{{ .Values.parameters.vollmed_gateway.port_http }}"
-      targetPort: "{{ .Values.parameters.vollmed_gateway.port_http }}"
-    - name: "https"
-      protocol: "TCP"
-      port: "{{ .Values.parameters.vollmed_gateway.port_https }}"
-      targetPort: "{{ .Values.parameters.vollmed_gateway.port_https }}"
+      port: {{ .Values.parameters.vollmed_gateway.port_http }}
+      targetPort: {{ .Values.parameters.vollmed_gateway.port_http }}
