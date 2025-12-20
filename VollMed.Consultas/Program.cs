@@ -65,7 +65,7 @@ using var scope = app.Services.CreateScope();
 var context = scope.ServiceProvider.GetRequiredService<VollMedDbContext>();
 DbSeeder.Seed(context);
 
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
 
 // Map Consultas endpoints
 app
