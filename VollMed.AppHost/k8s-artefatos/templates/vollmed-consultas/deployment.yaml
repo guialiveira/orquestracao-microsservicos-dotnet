@@ -1,0 +1,45 @@
+---
+apiVersion: "apps/v1"
+kind: "Deployment"
+metadata:
+  name: "vollmed-consultas-deployment"
+  labels:
+    app.kubernetes.io/name: "vollmed-apphost"
+    app.kubernetes.io/component: "vollmed-consultas"
+    app.kubernetes.io/instance: "{{.Release.Name}}"
+spec:
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: "vollmed-apphost"
+        app.kubernetes.io/component: "vollmed-consultas"
+        app.kubernetes.io/instance: "{{.Release.Name}}"
+    spec:
+      containers:
+        - image: "{{ .Values.parameters.vollmed_consultas.vollmed_consultas_image }}"
+          name: "vollmed-consultas"
+          envFrom:
+            - configMapRef:
+                name: "vollmed-consultas-config"
+            - secretRef:
+                name: "vollmed-consultas-secrets"
+          ports:
+            - name: "http"
+              protocol: "TCP"
+              containerPort: "{{ .Values.parameters.vollmed_consultas.port_http }}"
+            - name: "https"
+              protocol: "TCP"
+              containerPort: "{{ .Values.parameters.vollmed_consultas.port_https }}"
+          imagePullPolicy: "IfNotPresent"
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: "vollmed-apphost"
+      app.kubernetes.io/component: "vollmed-consultas"
+      app.kubernetes.io/instance: "{{.Release.Name}}"
+  replicas: 1
+  revisionHistoryLimit: 3
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+    type: "RollingUpdate"

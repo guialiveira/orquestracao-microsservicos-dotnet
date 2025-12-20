@@ -1,0 +1,25 @@
+---
+apiVersion: "v1"
+kind: "ConfigMap"
+metadata:
+  name: "vollmed-pacientes-config"
+  labels:
+    app.kubernetes.io/name: "vollmed-apphost"
+    app.kubernetes.io/component: "vollmed-pacientes"
+    app.kubernetes.io/instance: "{{.Release.Name}}"
+data:
+  ASPNETCORE_URLS: "{{ .Values.config.vollmed_pacientes.ASPNETCORE_URLS }}"
+  OTEL_DOTNET_EXPERIMENTAL_OTLP_EMIT_EXCEPTION_LOG_ATTRIBUTES: "{{ .Values.config.vollmed_pacientes.OTEL_DOTNET_EXPERIMENTAL_OTLP_EMIT_EXCEPTION_LOG_ATTRIBUTES }}"
+  OTEL_DOTNET_EXPERIMENTAL_OTLP_EMIT_EVENT_LOG_ATTRIBUTES: "{{ .Values.config.vollmed_pacientes.OTEL_DOTNET_EXPERIMENTAL_OTLP_EMIT_EVENT_LOG_ATTRIBUTES }}"
+  OTEL_DOTNET_EXPERIMENTAL_OTLP_RETRY: "{{ .Values.config.vollmed_pacientes.OTEL_DOTNET_EXPERIMENTAL_OTLP_RETRY }}"
+  ASPNETCORE_FORWARDEDHEADERS_ENABLED: "{{ .Values.config.vollmed_pacientes.ASPNETCORE_FORWARDEDHEADERS_ENABLED }}"
+  HTTP_PORTS: "{{ .Values.config.vollmed_pacientes.HTTP_PORTS }}"
+  PACIENTESDB_HOST: "{{ .Values.config.vollmed_pacientes.PACIENTESDB_HOST }}"
+  PACIENTESDB_PORT: "{{ .Values.config.vollmed_pacientes.PACIENTESDB_PORT }}"
+  PACIENTESDB_USERNAME: "{{ .Values.config.vollmed_pacientes.PACIENTESDB_USERNAME }}"
+  PACIENTESDB_URI: "{{ .Values.config.vollmed_pacientes.PACIENTESDB_URI }}"
+  PACIENTESDB_JDBCCONNECTIONSTRING: "{{ .Values.config.vollmed_pacientes.PACIENTESDB_JDBCCONNECTIONSTRING }}"
+  PACIENTESDB_DATABASE: "{{ .Values.config.vollmed_pacientes.PACIENTESDB_DATABASE }}"
+  RABBITMQ_HOST: "{{ .Values.config.vollmed_pacientes.RABBITMQ_HOST }}"
+  RABBITMQ_PORT: "{{ .Values.config.vollmed_pacientes.RABBITMQ_PORT }}"
+  RABBITMQ_USERNAME: "{{ .Values.config.vollmed_pacientes.RABBITMQ_USERNAME }}"
