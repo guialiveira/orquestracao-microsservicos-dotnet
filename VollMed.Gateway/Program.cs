@@ -23,12 +23,15 @@ builder.Services
         options.Audience = keycloakConfig["Audience"];
         options.RequireHttpsMetadata = keycloakConfig.GetValue<bool>("RequireHttpsMetadata");
 
+        var validIssuers = keycloakConfig.GetSection("ValidIssuers").Get<string[]>() ?? [];
+
         options.TokenValidationParameters = new TokenValidationParameters
         {
             ValidateAudience = keycloakConfig.GetValue<bool>("ValidateAudience"),
             ValidateIssuer = keycloakConfig.GetValue<bool>("ValidateIssuer"),
             ValidateLifetime = keycloakConfig.GetValue<bool>("ValidateLifetime"),
-            ValidateIssuerSigningKey = true
+            ValidateIssuerSigningKey = true,
+            ValidIssuers = validIssuers.Length > 0 ? validIssuers : null
         };
     });
 
