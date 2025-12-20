@@ -14,6 +14,7 @@ data:
   OTEL_DOTNET_EXPERIMENTAL_OTLP_RETRY: "{{ .Values.config.vollmed_gateway.OTEL_DOTNET_EXPERIMENTAL_OTLP_RETRY }}"
   ASPNETCORE_FORWARDEDHEADERS_ENABLED: "{{ .Values.config.vollmed_gateway.ASPNETCORE_FORWARDEDHEADERS_ENABLED }}"
   HTTP_PORTS: "{{ .Values.config.vollmed_gateway.HTTP_PORTS }}"
+  Authentication__KeyCloak__Authority: "{{ .Values.config.vollmed_gateway.Authentication__KeyCloak__Authority }}"
   VOLLMED-CONSULTAS_HTTP: "{{ .Values.config.vollmed_gateway.VOLLMED_CONSULTAS_HTTP }}"
   services__vollmed-consultas__http__0: "{{ .Values.config.vollmed_gateway.services__vollmed_consultas__http__0 }}"
   VOLLMED-CONSULTAS_HTTPS: "{{ .Values.config.vollmed_gateway.VOLLMED_CONSULTAS_HTTPS }}"

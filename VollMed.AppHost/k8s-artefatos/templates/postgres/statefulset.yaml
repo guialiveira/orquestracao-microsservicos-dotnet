@@ -26,19 +26,27 @@ spec:
               protocol: "TCP"
               containerPort: 5432
           volumeMounts:
-            - name: "keycloak-pgdata"
+            - name: "postgres-data"
               mountPath: "/var/lib/postgresql/data"
           imagePullPolicy: "IfNotPresent"
-      volumes:
-        - name: "keycloak-pgdata"
-          emptyDir: {}
   selector:
     matchLabels:
       app.kubernetes.io/name: "vollmed-apphost"
       app.kubernetes.io/component: "postgres"
       app.kubernetes.io/instance: "{{.Release.Name}}"
   replicas: 1
-  persistentVolumeClaimRetentionPolicy: {}
+  volumeClaimTemplates:
+    - metadata:
+        name: "postgres-data"
+      spec:
+        accessModes:
+          - "ReadWriteOnce"
+        resources:
+          requests:
+            storage: "1Gi"
+  persistentVolumeClaimRetentionPolicy:
+    whenDeleted: Retain
+    whenScaled: Retain
   updateStrategy:
     rollingUpdate:
       maxUnavailable: 0

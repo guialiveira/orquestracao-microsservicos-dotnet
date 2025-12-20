@@ -28,19 +28,27 @@ spec:
               protocol: "TCP"
               containerPort: 1433
           volumeMounts:
-            - name: "vollmed.apphost-fd41d4933d-sqlserver-data"
+            - name: "sqlserver-data"
               mountPath: "/var/opt/mssql"
           imagePullPolicy: "IfNotPresent"
-      volumes:
-        - name: "vollmed.apphost-fd41d4933d-sqlserver-data"
-          emptyDir: {}
   selector:
     matchLabels:
       app.kubernetes.io/name: "vollmed-apphost"
       app.kubernetes.io/component: "sqlserver"
       app.kubernetes.io/instance: "{{.Release.Name}}"
   replicas: 1
-  persistentVolumeClaimRetentionPolicy: {}
+  volumeClaimTemplates:
+    - metadata:
+        name: "sqlserver-data"
+      spec:
+        accessModes:
+          - "ReadWriteOnce"
+        resources:
+          requests:
+            storage: "2Gi"
+  persistentVolumeClaimRetentionPolicy:
+    whenDeleted: Retain
+    whenScaled: Retain
   updateStrategy:
     rollingUpdate:
       maxUnavailable: 0

@@ -22,7 +22,7 @@ spec:
             - configMapRef:
                 name: "keycloak-config"
           args:
-            - "start"
+            - "start-dev"
             - "--import-realm"
           ports:
             - name: "http"

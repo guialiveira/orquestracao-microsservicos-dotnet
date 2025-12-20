@@ -23,3 +23,4 @@ data:
   RABBITMQ_HOST: "{{ .Values.config.vollmed_consultas.RABBITMQ_HOST }}"
   RABBITMQ_PORT: "{{ .Values.config.vollmed_consultas.RABBITMQ_PORT }}"
   RABBITMQ_USERNAME: "{{ .Values.config.vollmed_consultas.RABBITMQ_USERNAME }}"
+  Api__Url: "{{ .Values.config.vollmed_consultas.Api__Url }}"
