@@ -1,5 +1,7 @@
 var builder = DistributedApplication.CreateBuilder(args);
 
+builder.AddDockerComposeEnvironment("compose");
+
 // keycloak + postgres
 var pgUsername = builder.AddParameter("pgUsername", "keycloak");
 var pgPassword = builder.AddParameter("pgPassword", "password");

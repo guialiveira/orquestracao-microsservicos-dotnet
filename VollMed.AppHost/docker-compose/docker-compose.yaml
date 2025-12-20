@@ -1,0 +1,195 @@
+services:
+  compose-dashboard:
+    image: "mcr.microsoft.com/dotnet/nightly/aspire-dashboard:latest"
+    expose:
+      - "18888"
+      - "18889"
+    networks:
+      - "aspire"
+    restart: "always"
+  postgres:
+    image: "docker.io/library/postgres:15"
+    environment:
+      POSTGRES_HOST_AUTH_METHOD: "scram-sha-256"
+      POSTGRES_INITDB_ARGS: "--auth-host=scram-sha-256 --auth-local=scram-sha-256"
+      POSTGRES_USER: "${PGUSERNAME}"
+      POSTGRES_PASSWORD: "${PGPASSWORD}"
+      POSTGRES_DB: "keycloak"
+    expose:
+      - "5432"
+    volumes:
+      - type: "volume"
+        target: "/var/lib/postgresql/data"
+        source: "keycloak-pgdata"
+        read_only: false
+    networks:
+      - "aspire"
+  keycloak:
+    image: "quay.io/keycloak/keycloak:26.4"
+    command:
+      - "start"
+      - "--import-realm"
+    environment:
+      KC_BOOTSTRAP_ADMIN_USERNAME: "admin"
+      KC_BOOTSTRAP_ADMIN_PASSWORD: "admin"
+      KC_HEALTH_ENABLED: "true"
+      KC_DB: "postgres"
+      KC_DB_URL: "jdbc:postgresql://postgres:5432/keycloakDB"
+      KC_DB_USERNAME: "keycloak"
+      KC_DB_PASSWORD: "password"
+      KEYCLOAK_ADMIN: "admin"
+      KEYCLOAK_ADMIN_PASSWORD: "admin"
+    expose:
+      - "8080"
+      - "9000"
+    volumes:
+      - type: "volume"
+        target: "/opt/keycloak/data"
+        source: "keycloak-pgdata"
+        read_only: false
+    depends_on:
+      postgres:
+        condition: "service_started"
+    networks:
+      - "aspire"
+  sqlserver:
+    image: "mcr.microsoft.com/mssql/server:2022-latest"
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_SA_PASSWORD: "${SQLSERVER_PASSWORD}"
+    expose:
+      - "1433"
+    volumes:
+      - type: "volume"
+        target: "/var/opt/mssql"
+        source: "vollmed.apphost-fd41d4933d-sqlserver-data"
+        read_only: false
+    networks:
+      - "aspire"
+  rabbitmq:
+    image: "docker.io/library/rabbitmq:4.2-management"
+    environment:
+      RABBITMQ_DEFAULT_USER: "guest"
+      RABBITMQ_DEFAULT_PASS: "${RABBITMQ_PASSWORD}"
+    expose:
+      - "5672"
+      - "15672"
+    networks:
+      - "aspire"
+  vollmed-consultas:
+    image: "${VOLLMED_CONSULTAS_IMAGE}"
+    environment:
+      OTEL_DOTNET_EXPERIMENTAL_OTLP_EMIT_EXCEPTION_LOG_ATTRIBUTES: "true"
+      OTEL_DOTNET_EXPERIMENTAL_OTLP_EMIT_EVENT_LOG_ATTRIBUTES: "true"
+      OTEL_DOTNET_EXPERIMENTAL_OTLP_RETRY: "in_memory"
+      ASPNETCORE_FORWARDEDHEADERS_ENABLED: "true"
+      HTTP_PORTS: "${VOLLMED_CONSULTAS_PORT}"
+      ConnectionStrings__consultasDB: "Server=sqlserver,1433;User ID=sa;Password=${SQLSERVER_PASSWORD};TrustServerCertificate=true;Initial Catalog=consultasDB"
+      CONSULTASDB_HOST: "sqlserver"
+      CONSULTASDB_PORT: "1433"
+      CONSULTASDB_USERNAME: "sa"
+      CONSULTASDB_PASSWORD: "${SQLSERVER_PASSWORD}"
+      CONSULTASDB_URI: "mssql://sqlserver:1433/consultasDB"
+      CONSULTASDB_JDBCCONNECTIONSTRING: "jdbc:sqlserver://sqlserver:1433;trustServerCertificate=true;databaseName=consultasDB"
+      CONSULTASDB_DATABASE: "consultasDB"
+      ConnectionStrings__rabbitmq: "amqp://guest:${RABBITMQ_PASSWORD}@rabbitmq:5672"
+      RABBITMQ_HOST: "rabbitmq"
+      RABBITMQ_PORT: "5672"
+      RABBITMQ_USERNAME: "guest"
+      RABBITMQ_PASSWORD: "${RABBITMQ_PASSWORD}"
+      RABBITMQ_URI: "amqp://guest:${RABBITMQ_PASSWORD}@rabbitmq:5672"
+      OTEL_EXPORTER_OTLP_ENDPOINT: "http://compose-dashboard:18889"
+      OTEL_EXPORTER_OTLP_PROTOCOL: "grpc"
+      OTEL_SERVICE_NAME: "vollmed-consultas"
+    expose:
+      - "${VOLLMED_CONSULTAS_PORT}"
+    networks:
+      - "aspire"
+  vollmed-medicos:
+    image: "${VOLLMED_MEDICOS_IMAGE}"
+    environment:
+      OTEL_DOTNET_EXPERIMENTAL_OTLP_EMIT_EXCEPTION_LOG_ATTRIBUTES: "true"
+      OTEL_DOTNET_EXPERIMENTAL_OTLP_EMIT_EVENT_LOG_ATTRIBUTES: "true"
+      OTEL_DOTNET_EXPERIMENTAL_OTLP_RETRY: "in_memory"
+      ASPNETCORE_FORWARDEDHEADERS_ENABLED: "true"
+      HTTP_PORTS: "${VOLLMED_MEDICOS_PORT}"
+      ConnectionStrings__medicosDB: "Server=sqlserver,1433;User ID=sa;Password=${SQLSERVER_PASSWORD};TrustServerCertificate=true;Initial Catalog=medicosDB"
+      MEDICOSDB_HOST: "sqlserver"
+      MEDICOSDB_PORT: "1433"
+      MEDICOSDB_USERNAME: "sa"
+      MEDICOSDB_PASSWORD: "${SQLSERVER_PASSWORD}"
+      MEDICOSDB_URI: "mssql://sqlserver:1433/medicosDB"
+      MEDICOSDB_JDBCCONNECTIONSTRING: "jdbc:sqlserver://sqlserver:1433;trustServerCertificate=true;databaseName=medicosDB"
+      MEDICOSDB_DATABASE: "medicosDB"
+      OTEL_EXPORTER_OTLP_ENDPOINT: "http://compose-dashboard:18889"
+      OTEL_EXPORTER_OTLP_PROTOCOL: "grpc"
+      OTEL_SERVICE_NAME: "vollmed-medicos"
+    expose:
+      - "${VOLLMED_MEDICOS_PORT}"
+    networks:
+      - "aspire"
+  vollmed-pacientes:
+    image: "${VOLLMED_PACIENTES_IMAGE}"
+    environment:
+      OTEL_DOTNET_EXPERIMENTAL_OTLP_EMIT_EXCEPTION_LOG_ATTRIBUTES: "true"
+      OTEL_DOTNET_EXPERIMENTAL_OTLP_EMIT_EVENT_LOG_ATTRIBUTES: "true"
+      OTEL_DOTNET_EXPERIMENTAL_OTLP_RETRY: "in_memory"
+      ASPNETCORE_FORWARDEDHEADERS_ENABLED: "true"
+      HTTP_PORTS: "${VOLLMED_PACIENTES_PORT}"
+      ConnectionStrings__pacientesDB: "Server=sqlserver,1433;User ID=sa;Password=${SQLSERVER_PASSWORD};TrustServerCertificate=true;Initial Catalog=pacientesDB"
+      PACIENTESDB_HOST: "sqlserver"
+      PACIENTESDB_PORT: "1433"
+      PACIENTESDB_USERNAME: "sa"
+      PACIENTESDB_PASSWORD: "${SQLSERVER_PASSWORD}"
+      PACIENTESDB_URI: "mssql://sqlserver:1433/pacientesDB"
+      PACIENTESDB_JDBCCONNECTIONSTRING: "jdbc:sqlserver://sqlserver:1433;trustServerCertificate=true;databaseName=pacientesDB"
+      PACIENTESDB_DATABASE: "pacientesDB"
+      ConnectionStrings__rabbitmq: "amqp://guest:${RABBITMQ_PASSWORD}@rabbitmq:5672"
+      RABBITMQ_HOST: "rabbitmq"
+      RABBITMQ_PORT: "5672"
+      RABBITMQ_USERNAME: "guest"
+      RABBITMQ_PASSWORD: "${RABBITMQ_PASSWORD}"
+      RABBITMQ_URI: "amqp://guest:${RABBITMQ_PASSWORD}@rabbitmq:5672"
+      OTEL_EXPORTER_OTLP_ENDPOINT: "http://compose-dashboard:18889"
+      OTEL_EXPORTER_OTLP_PROTOCOL: "grpc"
+      OTEL_SERVICE_NAME: "vollmed-pacientes"
+    expose:
+      - "${VOLLMED_PACIENTES_PORT}"
+    networks:
+      - "aspire"
+  vollmed-gateway:
+    image: "${VOLLMED_GATEWAY_IMAGE}"
+    environment:
+      OTEL_DOTNET_EXPERIMENTAL_OTLP_EMIT_EXCEPTION_LOG_ATTRIBUTES: "true"
+      OTEL_DOTNET_EXPERIMENTAL_OTLP_EMIT_EVENT_LOG_ATTRIBUTES: "true"
+      OTEL_DOTNET_EXPERIMENTAL_OTLP_RETRY: "in_memory"
+      ASPNETCORE_FORWARDEDHEADERS_ENABLED: "true"
+      HTTP_PORTS: "${VOLLMED_GATEWAY_PORT}"
+      VOLLMED-CONSULTAS_HTTP: "http://vollmed-consultas:${VOLLMED_CONSULTAS_PORT}"
+      services__vollmed-consultas__http__0: "http://vollmed-consultas:${VOLLMED_CONSULTAS_PORT}"
+      VOLLMED-CONSULTAS_HTTPS: "https://vollmed-consultas:${VOLLMED_CONSULTAS_PORT}"
+      VOLLMED-PACIENTES_HTTP: "http://vollmed-pacientes:${VOLLMED_PACIENTES_PORT}"
+      services__vollmed-pacientes__http__0: "http://vollmed-pacientes:${VOLLMED_PACIENTES_PORT}"
+      VOLLMED-PACIENTES_HTTPS: "https://vollmed-pacientes:${VOLLMED_PACIENTES_PORT}"
+      VOLLMED-MEDICOS_HTTP: "http://vollmed-medicos:${VOLLMED_MEDICOS_PORT}"
+      services__vollmed-medicos__http__0: "http://vollmed-medicos:${VOLLMED_MEDICOS_PORT}"
+      VOLLMED-MEDICOS_HTTPS: "https://vollmed-medicos:${VOLLMED_MEDICOS_PORT}"
+      KEYCLOAK_HTTP: "http://keycloak:8080"
+      services__keycloak__http__0: "http://keycloak:8080"
+      KEYCLOAK_MANAGEMENT: "http://keycloak:9000"
+      services__keycloak__management__0: "http://keycloak:9000"
+      OTEL_EXPORTER_OTLP_ENDPOINT: "http://compose-dashboard:18889"
+      OTEL_EXPORTER_OTLP_PROTOCOL: "grpc"
+      OTEL_SERVICE_NAME: "vollmed-gateway"
+    expose:
+      - "${VOLLMED_GATEWAY_PORT}"
+    networks:
+      - "aspire"
+networks:
+  aspire:
+    driver: "bridge"
+volumes:
+  keycloak-pgdata:
+    driver: "local"
+  vollmed.apphost-fd41d4933d-sqlserver-data:
+    driver: "local"
