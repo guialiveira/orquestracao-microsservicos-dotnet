@@ -18,6 +18,7 @@ parameters:
 secrets:
   sqlserver:
     MSSQL_SA_PASSWORD: "Password123!"
+    sqlserver_password: "Password123!"
   rabbitmq:
     RABBITMQ_DEFAULT_PASS: "guest"
   vollmed_consultas:
