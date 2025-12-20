@@ -56,7 +56,7 @@ config:
     OTEL_DOTNET_EXPERIMENTAL_OTLP_EMIT_EVENT_LOG_ATTRIBUTES: "true"
     OTEL_DOTNET_EXPERIMENTAL_OTLP_RETRY: "in_memory"
     ASPNETCORE_FORWARDEDHEADERS_ENABLED: "true"
-    Api__Url: "http://vollmed-gateway-service:8080/"
+    Api__Uri: "http://vollmed-gateway-service:8080/"
     CONSULTASDB_HOST: "sqlserver-service"
     CONSULTASDB_PORT: "1433"
     CONSULTASDB_USERNAME: "sa"
