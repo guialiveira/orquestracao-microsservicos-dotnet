@@ -23,3 +23,6 @@ data:
   RABBITMQ_HOST: "{{ .Values.config.vollmed_pacientes.RABBITMQ_HOST }}"
   RABBITMQ_PORT: "{{ .Values.config.vollmed_pacientes.RABBITMQ_PORT }}"
   RABBITMQ_USERNAME: "{{ .Values.config.vollmed_pacientes.RABBITMQ_USERNAME }}"
+  OTEL_EXPORTER_OTLP_ENDPOINT: "{{ .Values.config.vollmed_pacientes.OTEL_EXPORTER_OTLP_ENDPOINT }}"
+  OTEL_EXPORTER_OTLP_PROTOCOL: "{{ .Values.config.vollmed_pacientes.OTEL_EXPORTER_OTLP_PROTOCOL }}"
+  OTEL_SERVICE_NAME: "{{ .Values.config.vollmed_pacientes.OTEL_SERVICE_NAME }}"

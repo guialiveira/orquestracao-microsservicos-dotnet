@@ -1,0 +1,52 @@
+apiVersion: "apps/v1"
+kind: "Deployment"
+metadata:
+  name: "aspire-dashboard"
+  labels:
+    app: "aspire-dashboard"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: "aspire-dashboard"
+  template:
+    metadata:
+      labels:
+        app: "aspire-dashboard"
+    spec:
+      containers:
+      - name: "aspire-dashboard"
+        image: "{{ .Values.parameters.aspire_dashboard.aspire_dashboard_image }}"
+        imagePullPolicy: "IfNotPresent"
+        ports:
+        - name: "http"
+          containerPort: {{ .Values.parameters.aspire_dashboard.port_http }}
+          protocol: "TCP"
+        - name: "otlp"
+          containerPort: {{ .Values.parameters.aspire_dashboard.port_otlp }}
+          protocol: "TCP"
+        envFrom:
+        - configMapRef:
+            name: "aspire-dashboard-config"
+            optional: false
+        resources:
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+        livenessProbe:
+          tcpSocket:
+            port: {{ .Values.parameters.aspire_dashboard.port_http }}
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+        readinessProbe:
+          tcpSocket:
+            port: {{ .Values.parameters.aspire_dashboard.port_http }}
+          initialDelaySeconds: 10
+          periodSeconds: 5
+          timeoutSeconds: 3
+          failureThreshold: 3

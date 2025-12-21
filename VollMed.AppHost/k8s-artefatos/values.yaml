@@ -15,6 +15,10 @@ parameters:
     port_http: "8080"
     port_https: "8080"
     vollmed_gateway_image: "vollmed-gateway:latest"
+  aspire_dashboard:
+    port_http: 18888
+    port_otlp: 18889
+    aspire_dashboard_image: "mcr.microsoft.com/dotnet/aspire-dashboard:9.0"
 secrets:
   sqlserver:
     MSSQL_SA_PASSWORD: "Password123!"
@@ -55,6 +59,9 @@ config:
     OTEL_DOTNET_EXPERIMENTAL_OTLP_EMIT_EXCEPTION_LOG_ATTRIBUTES: "true"
     OTEL_DOTNET_EXPERIMENTAL_OTLP_EMIT_EVENT_LOG_ATTRIBUTES: "true"
     OTEL_DOTNET_EXPERIMENTAL_OTLP_RETRY: "in_memory"
+    OTEL_EXPORTER_OTLP_ENDPOINT: "http://aspire-dashboard-service:18889"
+    OTEL_EXPORTER_OTLP_PROTOCOL: "grpc"
+    OTEL_SERVICE_NAME: "vollmed-consultas"
     ASPNETCORE_FORWARDEDHEADERS_ENABLED: "true"
     Api__Uri: "http://vollmed-gateway-service:8080/"
     CONSULTASDB_HOST: "sqlserver-service"
@@ -71,6 +78,9 @@ config:
     OTEL_DOTNET_EXPERIMENTAL_OTLP_EMIT_EXCEPTION_LOG_ATTRIBUTES: "true"
     OTEL_DOTNET_EXPERIMENTAL_OTLP_EMIT_EVENT_LOG_ATTRIBUTES: "true"
     OTEL_DOTNET_EXPERIMENTAL_OTLP_RETRY: "in_memory"
+    OTEL_EXPORTER_OTLP_ENDPOINT: "http://aspire-dashboard-service:18889"
+    OTEL_EXPORTER_OTLP_PROTOCOL: "grpc"
+    OTEL_SERVICE_NAME: "vollmed-medicos"
     ASPNETCORE_FORWARDEDHEADERS_ENABLED: "true"
     MEDICOSDB_HOST: "sqlserver-service"
     MEDICOSDB_PORT: "1433"
@@ -83,6 +93,9 @@ config:
     OTEL_DOTNET_EXPERIMENTAL_OTLP_EMIT_EXCEPTION_LOG_ATTRIBUTES: "true"
     OTEL_DOTNET_EXPERIMENTAL_OTLP_EMIT_EVENT_LOG_ATTRIBUTES: "true"
     OTEL_DOTNET_EXPERIMENTAL_OTLP_RETRY: "in_memory"
+    OTEL_EXPORTER_OTLP_ENDPOINT: "http://aspire-dashboard-service:18889"
+    OTEL_EXPORTER_OTLP_PROTOCOL: "grpc"
+    OTEL_SERVICE_NAME: "vollmed-gateway"
     ASPNETCORE_FORWARDEDHEADERS_ENABLED: "true"
     PACIENTESDB_HOST: "sqlserver-service"
     PACIENTESDB_PORT: "1433"
@@ -98,6 +111,9 @@ config:
     OTEL_DOTNET_EXPERIMENTAL_OTLP_EMIT_EXCEPTION_LOG_ATTRIBUTES: "true"
     OTEL_DOTNET_EXPERIMENTAL_OTLP_EMIT_EVENT_LOG_ATTRIBUTES: "true"
     OTEL_DOTNET_EXPERIMENTAL_OTLP_RETRY: "in_memory"
+    OTEL_EXPORTER_OTLP_ENDPOINT: "http://aspire-dashboard-service:18889"
+    OTEL_EXPORTER_OTLP_PROTOCOL: "grpc"
+    OTEL_SERVICE_NAME: "vollmed-pacientes"
     ASPNETCORE_FORWARDEDHEADERS_ENABLED: "true"
     HTTP_PORTS: "8080"
     Authentication__KeyCloak__Authority: "http://keycloak-service:8080/realms/VollMed"
@@ -117,3 +133,7 @@ config:
     services__keycloak__http__0: "http://keycloak-service:8080"
     KEYCLOAK_MANAGEMENT: "http://keycloak-service:9000"
     services__keycloak__management__0: "http://keycloak-service:9000"
+  aspire_dashboard:
+    DOTNET_DASHBOARD_OTLP_ENDPOINT_URL: "http://+:18889"
+    DOTNET_DASHBOARD_UNSECURED_ALLOW_ANONYMOUS: "true"
+    ASPNETCORE_URLS: "http://+:18888"

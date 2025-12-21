@@ -1,0 +1,10 @@
+apiVersion: "v1"
+kind: "ConfigMap"
+metadata:
+  name: "aspire-dashboard-config"
+  labels:
+    app: "aspire-dashboard"
+data:
+  DOTNET_DASHBOARD_OTLP_ENDPOINT_URL: "{{ .Values.config.aspire_dashboard.DOTNET_DASHBOARD_OTLP_ENDPOINT_URL }}"
+  DOTNET_DASHBOARD_UNSECURED_ALLOW_ANONYMOUS: "{{ .Values.config.aspire_dashboard.DOTNET_DASHBOARD_UNSECURED_ALLOW_ANONYMOUS }}"
+  ASPNETCORE_URLS: "{{ .Values.config.aspire_dashboard.ASPNETCORE_URLS }}"

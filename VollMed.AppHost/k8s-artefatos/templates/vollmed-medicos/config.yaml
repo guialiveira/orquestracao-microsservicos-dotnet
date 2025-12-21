@@ -20,3 +20,6 @@ data:
   MEDICOSDB_URI: "{{ .Values.config.vollmed_medicos.MEDICOSDB_URI }}"
   MEDICOSDB_JDBCCONNECTIONSTRING: "{{ .Values.config.vollmed_medicos.MEDICOSDB_JDBCCONNECTIONSTRING }}"
   MEDICOSDB_DATABASE: "{{ .Values.config.vollmed_medicos.MEDICOSDB_DATABASE }}"
+  OTEL_EXPORTER_OTLP_ENDPOINT: "{{ .Values.config.vollmed_medicos.OTEL_EXPORTER_OTLP_ENDPOINT }}"
+  OTEL_EXPORTER_OTLP_PROTOCOL: "{{ .Values.config.vollmed_medicos.OTEL_EXPORTER_OTLP_PROTOCOL }}"
+  OTEL_SERVICE_NAME: "{{ .Values.config.vollmed_medicos.OTEL_SERVICE_NAME }}"

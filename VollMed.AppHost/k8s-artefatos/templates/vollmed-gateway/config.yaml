@@ -31,3 +31,6 @@ data:
   services__keycloak__http__0: "{{ .Values.config.vollmed_gateway.services__keycloak__http__0 }}"
   KEYCLOAK_MANAGEMENT: "{{ .Values.config.vollmed_gateway.KEYCLOAK_MANAGEMENT }}"
   services__keycloak__management__0: "{{ .Values.config.vollmed_gateway.services__keycloak__management__0 }}"
+  OTEL_EXPORTER_OTLP_ENDPOINT: "{{ .Values.config.vollmed_gateway.OTEL_EXPORTER_OTLP_ENDPOINT }}"
+  OTEL_EXPORTER_OTLP_PROTOCOL: "{{ .Values.config.vollmed_gateway.OTEL_EXPORTER_OTLP_PROTOCOL }}"
+  OTEL_SERVICE_NAME: "{{ .Values.config.vollmed_gateway.OTEL_SERVICE_NAME }}"

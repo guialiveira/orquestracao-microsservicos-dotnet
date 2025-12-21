@@ -24,3 +24,6 @@ data:
   RABBITMQ_PORT: "{{ .Values.config.vollmed_consultas.RABBITMQ_PORT }}"
   RABBITMQ_USERNAME: "{{ .Values.config.vollmed_consultas.RABBITMQ_USERNAME }}"
   Api__Uri: "{{ .Values.config.vollmed_consultas.Api__Uri }}"
+  OTEL_EXPORTER_OTLP_ENDPOINT: "{{ .Values.config.vollmed_consultas.OTEL_EXPORTER_OTLP_ENDPOINT }}"
+  OTEL_EXPORTER_OTLP_PROTOCOL: "{{ .Values.config.vollmed_consultas.OTEL_EXPORTER_OTLP_PROTOCOL }}"
+  OTEL_SERVICE_NAME: "{{ .Values.config.vollmed_consultas.OTEL_SERVICE_NAME }}"
