@@ -1,4 +1,6 @@
-Criadas com .NET9 as APIs do sistema simulando um marcador de consultas entre medicos e pacientes.
+Desenvlvido no curso "Arquitetura distribuída e escalável com .NET: do monolito ao Kubernetes" da Alura.
+
+Criadas com .NET9 as APIs do sistema simulando um agendador de consultas entre medicos e pacientes.
 Esse projeto tem uma arquitetura distribuida com microservições.
 A ideia inicial foi separar um monolito com (medicos, consultas e pacientes) em diferentes projetos com seus proprios bancos de dados para evitar sobrecarga e lentidão por concorrencia de diferentes endpoints.
 a partir desse ponto outros projetos foram criados para garantir a boa comunicação e orquesração entre os mesmos.
