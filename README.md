@@ -1,4 +1,4 @@
-Desenvlvido no curso "Arquitetura distribuída e escalável com .NET: do monolito ao Kubernetes" da Alura.
+Desenvolvido no curso "Arquitetura distribuída e escalável com .NET: do monolito ao Kubernetes" da Alura.
 
 Criadas com .NET9 as APIs do sistema simulando um agendador de consultas entre medicos e pacientes.
 Esse projeto tem uma arquitetura distribuida com microservições.
